@@ -1,3 +1,13 @@
+%--------
+% Notes:
+%   ~ADD       : Add the following.
+%   ~REFERENCE : Reference the following paper/authors.
+%   ~FIND      : Find a paper regarding the following.
+%   ~CHECK     : Check that the following is met.
+%   ~READ      : Read through the following paper/authors.
+%   ~MENTION   : Mention the following.
+%
+
 \documentclass{UoYCSproject}
 \author{Huw Taylor}
 \title{Tracing and Debugging GP2}
@@ -9,7 +19,6 @@
 \pagecount
 \abstract{
 % ~66 words
-...
 }
 \acknowledgements{
 
@@ -24,39 +33,64 @@
 \chapter{Introduction}
 % ~1333 words
 \section{Motivation}
-The University of York has produced a graphical editor for creating graphs and graph programs. The editor depends on a compiler to produce the resulting graph from applying a program to a host graph. Both these tools are planned to be used by students in the coming academic year (2016/2017) for the \emph{Computing by Graph Transformation} module.
-The aim of this project is to show the intermediate steps of the programme, so that correctness of the compiler and the graphical editor can be ensured, and also so that students using these tools to learn how graph programmes work can see the process with a finer granularity to better understand the process.
+The University of York has produced a graphical editor for creating graphs and graph programs. The editor depends on a compiler to produce the resultant graph, also made at the University of York. Both these tools are planned to be used by students in the coming academic year (2016/2017) for the GRAT module taught there.
+The aim of this project is to show the intermediate steps of the programme, so that correctness of the compiler and the graphical editor can be ensured, and also so that students using these tools to learn how graph programmes work can see the process with a finer granularity.
 \section{Ethics}
-The project discussed has very few ethical considerations.
+The project discussed has very few ethical considerations. It is not related to defence aand there are no safety or security concerns.
 
 \chapter{Literature Review}
 % ~4000 words
-
-
- * To show that you know what is happening in your field 
- * To justify why your work is interesting or important 
- * To establish the theoretical framework/context for your work 
- * To defend your choice of methodology 
- * To avoid repeating previous researchers’ mistakes
+% ~CHECK: Shows that you know what is happening in your field 
+% ~CHECK: Justifies why your work is interesting or important 
+% ~CHECK: establishes the theoretical framework/context for your work 
+% ~CHECK: defends your choice of methodology 
+% ~CHECK: avoids repeating previous researchers’ mistakes
 \section{Graph Programming}
-A graph is a visual way of representing data and relationships. The formal definition is a set of vertices (nodes) \emph{V}, a set of edges \emph{E}, and a set of labels \emph{L}. Additionally \emph{source} and \emph{target} functions associate edges with nodes, and a \emph{label} function, which maps labels to edges and nodes.
-
 \subsection{Graph Transformations}
-Mathematical theory of graphs allows us to transform them.
+A graph is a visual way of representing data and relationships. The formal definition is a set of vertices (nodes) \emph{V}, a set of edges \emph{E}, and a set of labels \emph{L}. Additionally \emph{source} and \emph{target} functions associate edges with nodes, and a \emph{label} function, which maps labels to edges and nodes.
+The mathematical theory of Graph Transformation allows the transformation of graphs by way of rules.
+Rules are formally defined in appendix X % ~ADD: formal definition of rules to apendix and link to them and add an informal defition too, maybe
+This field was first proposed in the 1970s by Ehrig, Pfender \& Schneider and has since been added to by % ~ADD: references to double-pushout and single-pushout methods, as well as contributions to graph theory in general
 \subsection{GP}
+Graph Programming first was % ~FIND: first suggestion of GP
+The University of York has developed a graph programming language \emph{GP}, and is developing a new implementation \emph{GP2}. The goal of them both has been to write programs that manipulate graphs in terms of graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning % ~REFERENCE: greg manning paper
+A GP allows the application of \emph{programs} to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{Host Graph}. The resulting graph is known as the \emph{Derived Graph}.
 Plump \& Steinart
-\subsection{GP2}
-Elliot 5.1 (p29-30)
-Bak 5.2 (p67)
-\section{Graphical GP Editors}
+% ~ADD: examples of simple graph programs illustrating calling rules (and the rules themselves), and loops, and
+GP currently is separated into four components:
+\begin{enumerate}
+  \item The York Abstract Machine (YAM)
+  \item The YAM Compiler
+  \item The GXL to YAMG Converter
+  \item The GP Editor
+\end{enumerate}
+% ~ADD: explanations for these four components
+\subsubsection{YAM}
+The YAM is written in C and focusses heavily on optimisation and performance, often sacrificing maintainability. 
+% ~REFERENCE: Alex elliot paper page 14
+\subsubsection{YAM Compiler}
 
-\subsection{GP Editor}
-Zhang 2.3.2 (p31-32)
-Onder 3.2 (p15)
+\subsubsection{GXL to YAMG Converter}
+\subsubsection{GP Editor}
+The GP Editor has had very little thought of usability put into it. There are very few instructions to those intenting to use the tool, and the editor itself does little to help new users.
+% ~READ, ~MENTION: Zhang 2.3.2 (p31-32)
+% ~READ, ~MENTION: Onder 3.2 (p15)
+
+The main problem found with GP was that these components relied heavily upon each other, and documentation on how their interfaces are non-existent. % ~Spelling
+This meant that all four components had to be regarded as a single system, which made alterations to any of them very difficult. This was the primary motivation behind GP2.
+
+\subsection{GP2}
+
+GP2 has a nubber of differences in the way in which it was implemented. As well as trying to address the issues of maintainability and usability, 
+% ~READ, ~MENTION: Elliot 5.1 (p29-30)
+% ~READ, ~MENTION: Bak 5.2 (p67)
+
 \subsection{GP2 Editor}
 Previous masters students stuff
 Ivaylo
 \section{Tracing}
+Tracing through thr steps of a program has been around since % ~FIND: origins of tracing for debugging.
+\subsection{Debugging}
 
 \chapter{Approach}
 \section{Requirement Identification}
@@ -87,7 +121,6 @@ Not a lot really.
 \chapter{Conclusions}
 % ~1333 words
 \section{Future Work}
-
 \chapter{Glossary}
 \begin{description}
   \item[LHS] \hfill \\
