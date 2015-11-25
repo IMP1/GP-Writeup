@@ -53,7 +53,7 @@ Rules are formally defined in appendix X % ~ADD: formal definition of rules to a
 This field was first proposed in the 1970s by Ehrig, Pfender \& Schneider and has since been added to by % ~ADD: references to double-pushout and single-pushout methods, as well as contributions to graph theory in general
 \subsection{GP}
 Graph Programming first was % ~FIND: first suggestion of GP
-The University of York has developed a graph programming language \emph{GP}, and is developing a new implementation \emph{GP2}. The goal of both has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. % ~REFERENCE: greg manning paper
+The University of York has developed a graph programming language \emph{GP}, and is developing a new implementation \emph{GP2}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. % ~REFERENCE: greg manning paper
 A GP allows the application of \emph{programs} to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{Host Graph}. The resulting graph is known as the \emph{Derived Graph}.
 Plump \& Steinart
 % ~ADD: examples of simple graph programs illustrating calling rules (and the rules themselves), and loops, and
@@ -86,7 +86,6 @@ This meant that all four components had to be regarded as a single system, which
 GP2 has a number of differences in the way in which it was implemented. As well as trying to address the issues of maintainability and usability, several features were added.
 Instead of using an abstract machine, GP2 generates C code directly, which removes the reliance on YAM, the YAM compiler, and YAM graph and program formats. It means that any C compiler can be used to generate the bytecode. It also attempts to standardise and document the format of graphs and programs that it takes. This means that tools to generate graphs either graphically or programmatically can be created without reducing modularity or creating complexity and interdependance between the components of the system. % ~CHECK: This isn't bullshit
 % ~MENTION: no longer non-deterministic. no backtracking and no longer the case that all solutions will be reached. Maybe mention the haskel one and its optional backtracking.
-
 % ~READ, ~MENTION: Elliot 5.1 (p29-30)
 % ~READ, ~MENTION: Bak 5.2 (p67)
 
