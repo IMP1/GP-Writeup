@@ -15,6 +15,7 @@
 \supervisor{Dr. Detlef Plump}
 \MEng
 \wordcount
+% ~CHECK: The bibTex reference LaTeX word count has the accessed field updated.
 % ~16000 words (55 pages) total
 \pagecount
 \abstract{
@@ -48,25 +49,21 @@ The project discussed has very few ethical considerations. It is not related to 
 \section{Graph Programming}
 \subsection{Graph Transformations}
 A graph is a visual way of representing data and relationships. The formal definition is a set of vertices (nodes) \emph{V}, a set of edges \emph{E}, and a set of labels \emph{L}. Additionally \emph{source} and \emph{target} functions associate edges with nodes, and a \emph{label} function, which maps labels to edges and nodes.
-The mathematical theory of Graph Transformation allows the transformation of graphs by way of rules.
-Rules are formally defined in appendix X % ~ADD: formal definition of rules to apendix and link to them and add an informal defition too, maybe
-This field was first proposed in the 1970s by Ehrig, Pfender \& Schneider and has since been added to by % ~ADD: references to double-pushout and single-pushout methods, as well as contributions to graph theory in general
+This field was first proposed in the 1970s by Ehrig, Pfender \& Schneider \cite{grat_origin}.
+\emph{TO~ADD: briefly mention double-pushout/single-pushout methods and give graphical examples.} % ~ADD: references to double-pushout and single-pushout methods, as well as contributions to graph theory in general
+The mathematical theory of Graph Transformation allows the transformation of graphs by way of rules. 
+\emph{TO~ADD: give formal/graphical definitions and examples of rules.}
+
+% ~READ, ~ADD: https://www.cs.york.ac.uk/plasma/wiki/index.php?title=GP_%28Graph_Programs%29 Lots of relevant papers and a couple of example programs i can steal and reference.
 \subsection{GP}
-Graph Programming first was % ~FIND: first suggestion of GP
-The University of York has developed a graph programming language \emph{GP}, and is developing a new implementation \emph{GP2}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. % ~REFERENCE: greg manning paper
+Graph Programming is XYZ
+The University of York has developed a graph programming language \emph{GP} \cite{gp1}, and is developing a new implementation \emph{GP2}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. 
 A GP allows the application of \emph{programs} to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{Host Graph}. The resulting graph is known as the \emph{Derived Graph}.
-Plump \& Steinart
-% ~ADD: examples of simple graph programs illustrating calling rules (and the rules themselves), and loops, and
-GP currently is separated into four components:
-\begin{enumerate}
-  \item The York Abstract Machine (YAM)
-  \item The YAM Compiler
-  \item The GXL to YAMG Converter
-  \item The GP Editor
-\end{enumerate}
-% ~ADD: explanations for these four components
-\subsubsection{YAM}
-The YAM is written in C and focusses heavily on optimisation and performance, often sacrificing maintainability. It takes in the rules, represented in bytecode, and executes them on host graphs, on an abstract machine.
+\emph{TO~ADD: example of simple graph programs} % ~ADD: examples of simple graph programs illustrating calling rules (and the rules themselves), and loops, and
+
+The original GP implementation is separated into four components:
+\subsubsection{York Abstract Machine}
+The YAM was written in C and focusses heavily on optimisation and performance, often sacrificing maintainability. It takes in the rules, represented in bytecode, and executes them on host graphs, on an abstract machine \cite[p. 13]{gp2_ide}.
 % ~REFERENCE: Alex elliot paper page 14
 \subsubsection{YAM Compiler}
 The YAM Compiler compiles an XML representation of the graph program and its rules into YAM bytecode to be run on the abstract machine. It is written in Haskell.
@@ -74,9 +71,8 @@ The YAM Compiler compiles an XML representation of the graph program and its rul
 YAMG is YAM's internal graph structure, and the converter takes in GXL, which is a subset of XML and a standard format for representing graphs.
 \subsubsection{GP Editor}
 The GP Editor was a GUI written in Java which allowed the creation of graphs graphically, as well as defining rules. It also displayed the derived graph.
-The GP Editor has had very little thought of usability put into it. There are very few instructions to those intenting to use the tool, and the editor itself does little to help new users.
+The GP Editor has had very little thought of usability put into it\cite[p. 35]{gp_ge}. There are very few instructions to those intenting to use the tool, and the editor itself does little to help new users \cite[p. 44, 45]{gp_ui}.
 % ~READ, ~MENTION: Zhang 2.3.2 (p31-32)
-% ~READ, ~MENTION: Onder 3.2 (p15)
 
 The main problem found with GP was that these components relied heavily upon each other, and documentation on how their interfaces are non-existent. % ~Spelling
 This meant that all four components had to be regarded as a single system, which made alterations to any of them very difficult. This was the primary motivation behind GP2.
@@ -84,23 +80,21 @@ This meant that all four components had to be regarded as a single system, which
 \subsection{GP2}
 
 GP2 has a number of differences in the way in which it was implemented. As well as trying to address the issues of maintainability and usability, several features were added.
-Instead of using an abstract machine, GP2 generates C code directly, which removes the reliance on YAM, the YAM compiler, and YAM graph and program formats. It means that any C compiler can be used to generate the bytecode. It also attempts to standardise and document the format of graphs and programs that it takes. This means that tools to generate graphs either graphically or programmatically can be created without reducing modularity or creating complexity and interdependance between the components of the system. % ~CHECK: This isn't bullshit
-% ~MENTION: no longer non-deterministic. no backtracking and no longer the case that all solutions will be reached. Maybe mention the haskel one and its optional backtracking.
-% ~READ, ~MENTION: Elliot 5.1 (p29-30)
-% ~READ, ~MENTION: Bak 5.2 (p67)
+Instead of using an abstract machine, GP2 generates C code directly \cite{chris_compiler}, which removes the reliance on YAM, the YAM compiler, and YAM graph and program formats. It means that any C compiler can be used to generate the bytecode. It also attempts to standardise and document the format of graphs and programs that it takes. This means that tools to generate graphs either graphically or programmatically can be created without reducing modularity or creating complexity and interdependance between the components of the system \cite{gp2_ide}. % ~CHECK: This isn't bullshit
+
+GP2 no longer enforces non-detereministic execution \cite[p. 15]{gp2_ide}, and doesn't backtrack to reach all possible solutions. This was done to achieve a higher level of implementation efficiency \cite[p. 15]{chris_compiler}, but sacrifices completeness.
+\emph{TO~ADD: mention the haskell interpreter but say it's not `official'.} % ~MENTION: no longer non-deterministic. no backtracking and no longer the case that all solutions will be reached. Maybe mention the haskel one and its optional backtracking.
 
 \subsection{GP2 Editor}
-The GP2 graphical editor for creating graphs and graph programs is currently under development. GP2 intends it to 
+The GP2 graphical editor for creating graphs and graph programs is currently under development. GP2 intends it to have functionality to allow for nodes to be highlighted.
 % ~READ, ~MENTION: Ivaylo's paper
 
 \section{Tracing}
-Tracing through the steps of a program has been around since % ~FIND: origins of tracing for debugging
-It allows programmers to ensure that each step is procuding the right results.
+Tracing through the steps of a program has been around since programs themselves. % ~FIND: origins of tracing for debugging
+It allows programmers to ensure that each step is procuding the right results. Formal methods have been discussed as far back as the 70s \cite{psych_debug, code_walkthroughs}.
 
-
-
-
-
+% ~FIND: some papers on debugging
+% ~READ: psych_debug and code_walkthroughs for stuff to say about tracing/debugging
 
 
 
