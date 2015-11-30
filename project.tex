@@ -9,7 +9,22 @@
 %
 
 \documentclass{UoYCSproject}
+% Tikz Setup
 \usepackage{tikz}
+\usetikzlibrary{ matrix,      % For easy node positioning
+                 fit,         % For easily fitting nodes inside another one
+                 arrows,
+                 positioning, % For easy node-relative placements
+               }
+\tikzstyle{edge} = [->, bend left]
+\tikzstyle{vertex} = [circle, minimum width=0.5cm, text centered, draw=black]
+\tikzstyle{graph} = [rectangle, draw=black, inner sep=1cm]
+\tikzstyle{rule} = [rectangle, inner sep=1cm]
+\tikzstyle{derivation} = [-implies, double]
+% Listings Setup
+\usepackage{listings}
+\renewcommand{\lstlistingname}{C Code}
+
 \author{Huw Taylor}
 \title{Tracing and Debugging GP2}
 \date{\today}
@@ -52,33 +67,75 @@ The project discussed has very few ethical considerations. It is not related to 
 A graph is a visual way of representing data and relationships. The formal definition is a set of vertices (nodes) \emph{V}, a set of edges \emph{E}, and a set of labels \emph{L}. Additionally \emph{source} and \emph{target} functions associate edges with nodes, and a \emph{label} function, which maps labels to edges and nodes.
 This field was first proposed in the 1970s by Ehrig, Pfender \& Schneider \cite{grat_origin}.
 \emph{TO~ADD: briefly mention double-pushout/single-pushout methods and give graphical examples.} % ~ADD: references to double-pushout and single-pushout methods, as well as contributions to graph theory in general
-The mathematical theory of Graph Transformation allows the transformation of graphs by way of rules. Rules are applied to graphs. They include a LHS (Left-Hand Side) graph, and RHS (Right-Hand Side) graph and an interface graph, which connects nodes in the LHS to nodes in the RHS. If the interface graph is ommited then it is inferred that it compises the common labelled nodes in both the LHS and RHS. 
+The mathematical theory of Graph Transformation allows the transformation of graphs by way of rules. Rules are applied to graphs. They include a LHS (Left-Hand Side) graph, and RHS (Right-Hand Side) graph and an interface graph, which connects nodes in the LHS to nodes in the RHS. If the interface graph is ommited then it is inferred that it compises the common labelled nodes in both the LHS and RHS.
+
+Figure \ref{fig:simple_rule} on page \pageref{fig:simple_rule} shows a simple rule that removes an edge. Note that nodes 1 and 2 can be the same node in the host graph, and so will remove edges whose source and target nodes are the same. Figure \ref{fig:simple_rule_sans_k} on page \pageref{fig:simple_rule_sans_k} shows the same rule without its interface graph.
 
 \begin{figure}
-\begin{tikzpicture}
-
-\def \n {5}
-\def \radius {3cm}
-\def \margin {8} % margin in angles, depends on the radius
-
-\foreach \s in {1,...,\n}
-{
-  \node[draw, circle] at ({360/\n * (\s - 1)}:\radius) {$\s$};
-  \draw[->, >=latex] ({360/\n * (\s - 1)+\margin}:\radius) 
-    arc ({360/\n * (\s - 1)+\margin}:{360/\n * (\s)-\margin}:\radius);
-}
+\label{fig:simple_rule}
+\centering
+\begin{tikzpicture}[scale=2]
+  \node (n1) [vertex, label=below:{1}] at (0, 0) {};
+  \node (n2) [vertex, label=below:{2}] at (1, 0) {};
+  \path [edge] (n1) edge node {} (n2);
+  \node (l) [graph, fit={(n1) (n2)}, label=below:{LHS}] {};
+  
+  \node (n3) [vertex, label=below:{1}] at (2, 0) {};
+  \node (n4) [vertex, label=below:{2}] at (3, 0) {};
+  \node (k) [graph, fit={(n3) (n4)}, label=below:{Interface}] {};
+  
+  \node (n5) [vertex, label=below:{1}] at (4, 0) {};
+  \node (n6) [vertex, label=below:{2}] at (5, 0) {};
+  \node (r) [graph, fit={(n5) (n6)}, label=below:{RHS}] {};
 \end{tikzpicture}
 \caption{Rule Example}
 \end{figure}
 
-\emph{TO~ADD: give formal/graphical definitions and examples of rules.}
+\begin{figure}
+\label{fig:simple_rule_sans_k}
+\centering
+\begin{tikzpicture}[scale=2]
+  \node (n1) [vertex, label=below:{1}] at (0, 0) {};
+  \node (n2) [vertex, label=below:{2}] at (1, 0) {};
+  \path [edge] (n1) edge node {} (n2);
+  \node (l) [graph, fit={(n1) (n2)}, label=below:{LHS}] {};
+  
+  \node (n5) [vertex, label=below:{1}] at (2, 0) {};
+  \node (n6) [vertex, label=below:{2}] at (3, 0) {};
+  \node (r) [graph, fit={(n5) (n6)}, label=below:{RHS}] {};
+\end{tikzpicture}
+\caption{Rule Example without Interface Graph}
+\end{figure}
 
 % ~READ, ~ADD: https://www.cs.york.ac.uk/plasma/wiki/index.php?title=GP_%28Graph_Programs%29 Lots of relevant papers and a couple of example programs i can steal and reference.
 \subsection{GP}
 Graph Programming is XYZ
-The University of York has developed a graph programming language \emph{GP} \cite{gp1}, and is developing a new implementation \emph{GP2}. Th e goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. 
-A GP allows the application of \emph{programs} to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{Host Graph}. The resulting graph is known as the \emph{Derived Graph}.
+The University of York has developed a graph programming language \emph{GP} \cite{gp1}, and is developing a new implementation \emph{GP2}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. 
+A GP allows the application of \emph{programs} to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{Host Graph}. The resulting graph is known as the \emph{Derived Graph}. A simple program could just be the continued application of a single rule.
 \emph{TO~ADD: example of simple graph programs} % ~ADD: examples of simple graph programs illustrating calling rules (and the rules themselves), and loops, and
+
+\begin{figure}
+\label{fig:simple_program}
+\centering
+\begin{tikzpicture}[scale=2]
+  \node (code) at (0, 1.5) {$main = RemoveEdge!;$};
+  \node (rule_1) at (0, 1) {$RemoveEdge(a,b,c : int) = $};
+
+  \node (n1) [vertex, label=below:{1}] at (0, 0) {a};
+  \node (n2) [vertex, label=below:{2}] at (1, 0) {b};
+  \path [edge] (n1) edge node[label=above:{c}] {} (n2);
+  \node (l) [rule, fit={(n1) (n2)}] {};
+  
+  \node (n5) [vertex, label=below:{1}] at (2, 0) {a};
+  \node (n6) [vertex, label=below:{2}] at (3, 0) {b};
+  \node (r) [rule, fit={(n5) (n6)}] {};
+  
+  \draw[-implies,double, thick] (l) -- (r);
+
+\end{tikzpicture}
+\caption{Simple Graph Program}
+\end{figure}
+
 
 The original GP implementation is separated into four components:
 \subsubsection{York Abstract Machine}
@@ -143,6 +200,12 @@ Not a lot really.
   \item \ldots
 \end{itemize}
 \section{Implementation}
+
+
+\begin{lstlisting}[label=c_1, caption=Placeholder C Code]
+*foo = &bar;
+\end{lstlisting}
+
 
 \chapter{Evaluation}
 % ~3333 words
