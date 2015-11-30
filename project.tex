@@ -9,13 +9,14 @@
 %
 
 \documentclass{UoYCSproject}
+\usepackage{tikz}
 \author{Huw Taylor}
 \title{Tracing and Debugging GP2}
 \date{\today}
 \supervisor{Dr. Detlef Plump}
 \MEng
 \wordcount
-% ~CHECK: The bibTex reference LaTeX word count has the accessed field updated.
+% ~CHECK: The bibTex reference LaTeX word count has the `accessed` field updated.
 % ~16000 words (55 pages) total
 \pagecount
 \abstract{
@@ -51,13 +52,31 @@ The project discussed has very few ethical considerations. It is not related to 
 A graph is a visual way of representing data and relationships. The formal definition is a set of vertices (nodes) \emph{V}, a set of edges \emph{E}, and a set of labels \emph{L}. Additionally \emph{source} and \emph{target} functions associate edges with nodes, and a \emph{label} function, which maps labels to edges and nodes.
 This field was first proposed in the 1970s by Ehrig, Pfender \& Schneider \cite{grat_origin}.
 \emph{TO~ADD: briefly mention double-pushout/single-pushout methods and give graphical examples.} % ~ADD: references to double-pushout and single-pushout methods, as well as contributions to graph theory in general
-The mathematical theory of Graph Transformation allows the transformation of graphs by way of rules. 
+The mathematical theory of Graph Transformation allows the transformation of graphs by way of rules. Rules are applied to graphs. They include a LHS (Left-Hand Side) graph, and RHS (Right-Hand Side) graph and an interface graph, which connects nodes in the LHS to nodes in the RHS. If the interface graph is ommited then it is inferred that it compises the common labelled nodes in both the LHS and RHS. 
+
+\begin{figure}
+\begin{tikzpicture}
+
+\def \n {5}
+\def \radius {3cm}
+\def \margin {8} % margin in angles, depends on the radius
+
+\foreach \s in {1,...,\n}
+{
+  \node[draw, circle] at ({360/\n * (\s - 1)}:\radius) {$\s$};
+  \draw[->, >=latex] ({360/\n * (\s - 1)+\margin}:\radius) 
+    arc ({360/\n * (\s - 1)+\margin}:{360/\n * (\s)-\margin}:\radius);
+}
+\end{tikzpicture}
+\caption{Rule Example}
+\end{figure}
+
 \emph{TO~ADD: give formal/graphical definitions and examples of rules.}
 
 % ~READ, ~ADD: https://www.cs.york.ac.uk/plasma/wiki/index.php?title=GP_%28Graph_Programs%29 Lots of relevant papers and a couple of example programs i can steal and reference.
 \subsection{GP}
 Graph Programming is XYZ
-The University of York has developed a graph programming language \emph{GP} \cite{gp1}, and is developing a new implementation \emph{GP2}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. 
+The University of York has developed a graph programming language \emph{GP} \cite{gp1}, and is developing a new implementation \emph{GP2}. Th e goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. 
 A GP allows the application of \emph{programs} to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{Host Graph}. The resulting graph is known as the \emph{Derived Graph}.
 \emph{TO~ADD: example of simple graph programs} % ~ADD: examples of simple graph programs illustrating calling rules (and the rules themselves), and loops, and
 
@@ -78,7 +97,6 @@ The main problem found with GP was that these components relied heavily upon eac
 This meant that all four components had to be regarded as a single system, which made alterations to any of them very difficult. This was the primary motivation behind GP2.
 
 \subsection{GP2}
-
 GP2 has a number of differences in the way in which it was implemented. As well as trying to address the issues of maintainability and usability, several features were added.
 Instead of using an abstract machine, GP2 generates C code directly \cite{chris_compiler}, which removes the reliance on YAM, the YAM compiler, and YAM graph and program formats. It means that any C compiler can be used to generate the bytecode. It also attempts to standardise and document the format of graphs and programs that it takes. This means that tools to generate graphs either graphically or programmatically can be created without reducing modularity or creating complexity and interdependance between the components of the system \cite{gp2_ide}. % ~CHECK: This isn't bullshit
 
@@ -86,16 +104,15 @@ GP2 no longer enforces non-detereministic execution \cite[p. 15]{gp2_ide}, and d
 \emph{TO~ADD: mention the haskell interpreter but say it's not `official'.} % ~MENTION: no longer non-deterministic. no backtracking and no longer the case that all solutions will be reached. Maybe mention the haskel one and its optional backtracking.
 
 \subsection{GP2 Editor}
-The GP2 graphical editor for creating graphs and graph programs is currently under development. GP2 intends it to have functionality to allow for nodes to be highlighted.
-% ~READ, ~MENTION: Ivaylo's paper
+The GP2 graphical editor for creating graphs and graph programs is currently under development. It will allow for the creation of graphs graphically, rather than textually, and it will allow for the creation of programs textually, and their rules graphically, assigning the LHS and RHS of the rules. In contrast with the GP1 editor, the GP2 editor will also include functionality to highlight nodes.
 
 \section{Tracing}
 Tracing through the steps of a program has been around since programs themselves. % ~FIND: origins of tracing for debugging
-It allows programmers to ensure that each step is procuding the right results. Formal methods have been discussed as far back as the 70s \cite{psych_debug, code_walkthroughs}.
+It allows programmers to ensure that each step is procuding the right results and allows a more detailed insight into the workings of a program. Formal methods have been discussed as far back as the 70s \cite{psych_debug, code_walkthroughs}.
 
 % ~FIND: some papers on debugging
 % ~READ: psych_debug and code_walkthroughs for stuff to say about tracing/debugging
-
+% ~READ: https://bitbucket.org/pypy/extradoc/src/tip/talk/pepm2011/bolz-allocation-removal.pdf (reference #16 might be good)
 
 
 % END OF LITERATURE REVIEW
@@ -110,9 +127,12 @@ It allows programmers to ensure that each step is procuding the right results. F
 \end{enumerate}
 \section{Design}
 % ~3333 words
- * Lifecycle
- * Engineering approach
- * Time management and/or general plan
+\begin{itemize}
+	\item Lifecycle
+ 	\item Engineering approach
+ 	\item Time management and/or general plan
+	\item \ldots
+\end{itemize}
  
 \subsection{Tools}
 Not a lot really.
