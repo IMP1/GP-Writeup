@@ -120,36 +120,119 @@ Figure \ref{fig:simple_rule} on page \pageref{fig:simple_rule} shows a simple ru
 \end{figure}
 
 % ~READ, ~ADD: https://www.cs.york.ac.uk/plasma/wiki/index.php?title=GP_%28Graph_Programs%29 Lots of relevant papers and a couple of example programs i can steal and reference.
-\subsection{GP}
+\subsection{Graph Programs}
 The University of York has developed a graph programming language \emph{GP} \cite{gp1}, and has developed a new implementation \emph{GP2}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. % ~ADD, ~REFERENCE: Greg Manning Paper
 GP allows the application of \emph{programs} to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{Host Graph}. The resulting graph is known as the \emph{Result Graph}. A simple program could just be the continued application of a single rule.
-% ~ADD: examples of simple graph programs illustrating calling rules (and the rules themselves)
 
 \begin{figure}
 \label{fig:simple_program}
 \centering
 % ~ADD: Make the code portion of this picture truetype
-% ~AMMEND: Make this a more interesting program and show some steps of its execution.
+% ~CHECK: Make sure this displays how it should (https://www.cs.york.ac.uk/plasma/wiki/images/5/5c/ExampleGraphProgramSimple_Dijkstra.png)
 \begin{tikzpicture}[scale=2]
-  \node (code) at (0, 1.5) {$main = RemoveEdge!;$};
-  \node (rule_1) at (0, 1) {$RemoveEdge(a,b,c : int) = $};
+  \node (code) at (0, 1.5) {$main = InitTags!; Reduce$};
+  \node (rule_1) at (0, 1) {$InitTags(a,b,c,n : int) = $};
 
-  \node (n1) [vertex, label=below:{1}] at (0, 0) {a};
-  \node (n2) [vertex, label=below:{2}] at (1, 0) {b};
-  \path [edge] (n1) edge node[label=above:{c}] {} (n2);
-  \node (l) [rule, fit={(n1) (n2)}] {};
+  \node (n1) [vertex, label=below:{1}] at (0, 0) {a_n};
+  \node (n2) [vertex, label=below:{2}] at (1, 0) {c};
+  \path [edge] (n1) edge node[label=above:{b}] {} (n2);
+  \node (r1_l) [rule, fit={(n1) (n2)}] {};
   
-  \node (n5) [vertex, label=below:{1}] at (2, 0) {a};
-  \node (n6) [vertex, label=below:{2}] at (3, 0) {b};
-  \node (r) [rule, fit={(n5) (n6)}] {};
+  \node (n3) [vertex, label=below:{1}] at (2, 0) {a_n};
+  \node (n4) [vertex, label=below:{2}] at (3, 0) {c_n+b};
+  \path [edge] (n3) edge node[label=above:{b}] {} (n4);
+  \node (r1_r) [rule, fit={(n3) (n4)}] {};
   
-  \draw[-implies,double, thick] (l) -- (r);
+  \draw[-implies,double, thick] (r1_l) -- (r1_r);
+  
+  \node (rule_2) at (0, 1) {$Reduce(a,b,c,n,i : int) = $};  
+  
+  \node (n5) [vertex, label=below:{1}] at (0, 1) {a_n};
+  \node (n6) [vertex, label=below:{2}] at (1, 1) {c_i};
+  \path [edge] (n5) edge node[label=above:{b}] {} (n6);
+  \node (r2_l) [rule, fit={(n5) (n6)}] {};
+  
+  \node (n7) [vertex, label=below:{1}] at (2, 1) {a_n};
+  \node (n8) [vertex, label=below:{2}] at (3, 1) {c_n+b};
+  \path [edge] (n7) edge node[label=above:{b}] {} (n8);
+  \node (r2_r) [rule, fit={(n7) (n8)}] {};
+  
+  \draw[-implies,double, thick] (r2_l) -- (r2_r);
+  \node (rule_2_condition) at (0, 2) {$where n+b < i$};  
 
 \end{tikzpicture}
-\caption{Simple Graph Program}
+\caption{Simple Dijkstra Program Example}
 \end{figure}
 
-\subsection{GP2}
+The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds the shortest path to each node, using Dijkstra's algorithm for pathfinding. Running it on the host graph will give the intermediary graphs shown in \ref{fig:simple_program_example} on \pageref{fig:simple_program_example}. % ~ADD: Maybe break down the application of one rule. Show what's happening. Maybe somewhere else?
+
+\begin{figure}
+\label{fig:simple_program_example}
+\centering
+% ~CHECK: Make sure this displays how it should.
+\begin{tikzpicture}[scale=2]
+  \node (n1_1) [vertex] at (0, 0) {1_0};
+  \node (n1_2) [vertex] at (1, 0) {2};
+  \node (n1_3) [vertex] at (1, 1) {3};
+  \node (n1_4) [vertex] at (1, 2) {4};
+  \node (n1_5) [vertex] at (2, 1) {5};
+  \path [edge] (n1_1) edge node[label=above:{4}] {} (n1_2);
+  \path [edge] (n1_1) edge node[label=above:{6}] {} (n1_3);
+  \path [edge] (n1_2) edge node[label=above:{1}] {} (n1_3);
+  \path [edge] (n1_3) edge node[label=above:{2}] {} (n1_4);
+  \path [edge] (n1_2) edge node[label=above:{6}] {} (n1_5);
+  \path [edge] (n1_3) edge node[label=above:{4}] {} (n1_5);
+  \path [edge] (n1_4) edge node[label=above:{1}] {} (n1_5);
+  \node (g0) [rule, fit={(n1_1) (n1_2) (n1_3) (n1_4) (n1_5)}, label=below:{Host Graph}] {};
+  
+  \node (n2_1) [vertex] at (0, 0) {1_0}; % probably have to change these coordinates.
+  \node (n2_2) [vertex] at (1, 0) {2_4};
+  \node (n2_3) [vertex] at (1, 1) {3};
+  \node (n2_4) [vertex] at (1, 2) {4};
+  \node (n2_5) [vertex] at (2, 1) {5};
+  \path [edge] (n2_1) edge node[label=above:{4}] {} (n2_2);
+  \path [edge] (n2_1) edge node[label=above:{6}] {} (n2_3);
+  \path [edge] (n2_2) edge node[label=above:{1}] {} (n2_3);
+  \path [edge] (n2_3) edge node[label=above:{2}] {} (n2_4);
+  \path [edge] (n2_2) edge node[label=above:{6}] {} (n2_5);
+  \path [edge] (n2_3) edge node[label=above:{4}] {} (n2_5);
+  \path [edge] (n2_4) edge node[label=above:{1}] {} (n2_5);
+  \node (g1) [rule, fit={(n2_1) (n2_2) (n2_3) (n2_4) (n2_5)}, label=below:{Graph after one application of InitTags}] {};
+  
+  \node (n3_1) [vertex] at (0, 0) {1_0}; % probably have to change these coordinates.
+  \node (n3_2) [vertex] at (1, 0) {2_4};
+  \node (n3_3) [vertex] at (1, 1) {3_6};
+  \node (n3_4) [vertex] at (1, 2) {4_8};
+  \node (n3_5) [vertex] at (2, 1) {5_10};
+  \path [edge] (n3_1) edge node[label=above:{4}] {} (n3_2);
+  \path [edge] (n3_1) edge node[label=above:{6}] {} (n3_3);
+  \path [edge] (n3_2) edge node[label=above:{1}] {} (n3_3);
+  \path [edge] (n3_3) edge node[label=above:{2}] {} (n3_4);
+  \path [edge] (n3_2) edge node[label=above:{6}] {} (n3_5);
+  \path [edge] (n3_3) edge node[label=above:{4}] {} (n3_5);
+  \path [edge] (n3_4) edge node[label=above:{1}] {} (n3_5);
+  \node (gx) [rule, fit={(n3_1) (n3_2) (n3_3) (n3_4) (n3_5)}, label=below:{Graph after all possible applications of InitTags}] {}; 
+  
+  \node (n4_1) [vertex] at (0, 0) {1_0}; % probably have to change these coordinates.
+  \node (n4_2) [vertex] at (1, 0) {2_4};
+  \node (n4_3) [vertex] at (1, 1) {3_5};
+  \node (n4_4) [vertex] at (1, 2) {4_7};
+  \node (n4_5) [vertex] at (2, 1) {5_8};
+  \path [edge] (n4_1) edge node[label=above:{4}] {} (n4_2);
+  \path [edge] (n4_1) edge node[label=above:{6}] {} (n4_3);
+  \path [edge] (n4_2) edge node[label=above:{1}] {} (n4_3);
+  \path [edge] (n4_3) edge node[label=above:{2}] {} (n4_4);
+  \path [edge] (n4_2) edge node[label=above:{6}] {} (n4_5);
+  \path [edge] (n4_3) edge node[label=above:{4}] {} (n4_5);
+  \path [edge] (n4_4) edge node[label=above:{1}] {} (n4_5);
+  \node (gn) [rule, fit={(n4_1) (n4_2) (n4_3) (n4_4) (n4_5)}, label=below:{Graph after all possible applications of Reduce}] {}; 
+  
+\end{tikzpicture}
+\caption{Simple Dijkstra Program Example}
+\end{figure}
+
+% ~ADD: first few iterations of this program on an example host graph.
+
 GP2 has a number of differences in the way in which it was implemented. As well as trying to address the issues of maintainability and usability, several features were added.
 Instead of using an abstract machine, GP2 generates C code directly \cite{chris_compiler}, which removes the reliance on YAM, the YAM compiler, and YAM graph and program formats. It means that any C compiler can be used to generate the bytecode. It also attempts to standardise and document the format of graphs and programs that it takes. This means that tools to generate graphs either graphically or programmatically can be created without reducing modularity or creating complexity and interdependance between the components of the system \cite{gp2_ide}.
 
