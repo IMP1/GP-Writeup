@@ -10,6 +10,7 @@
 %   ~IDEA      : Suggestion for later in the project.
 
 \documentclass{UoYCSproject}
+\usepackage{geometry}
 % Tikz Setup
 \usepackage{tikz}
 \usetikzlibrary{ matrix,      % For easy node positioning
@@ -18,10 +19,12 @@
                  positioning, % For easy node-relative placements
                }
 \tikzstyle{edge} = [->, bend left]
+\tikzstyle{edge'} = [->, bend right]
 \tikzstyle{vertex} = [circle, minimum width=0.5cm, text centered, draw=black]
+\tikzstyle{graph_small} = [rectangle, draw=black, inner sep=0.5cm]
 \tikzstyle{graph} = [rectangle, draw=black, inner sep=1cm]
 \tikzstyle{rule} = [rectangle, inner sep=1cm]
-\tikzstyle{derivation} = [-implies, double]
+\tikzstyle{derivation} = [-implies, double, thick]
 % Listings Setup
 \usepackage{listings}
 \renewcommand{\lstlistingname}{C Code}
@@ -37,22 +40,25 @@
 \pagecount
 \abstract{
 % ~66 words
+
 }
 \acknowledgements{
-
+% Detlef
+% Chris Bak
+% Ivaylo... ¬_¬
 }
 
 \begin{document}
 
 \maketitle
 \tableofcontents
-\listoffigures
+% \listoffigures
 
 \chapter{Introduction}
 % ~1333 words
 \section{Motivation}
-The University of York has produced a graphical editor for creating graphs and graph programs. The editor depends on a compiler to produce the resultant graph, also made at the University of York. Both these tools are planned to be used by students in the coming academic year (2016/2017) for the GRAT module taught there.
-The aim of this project is to show the intermediate steps of the programme, so that correctness of the compiler and the graphical editor can be ensured, and also so that students using these tools, learning how graph programs work, can see the process with a finer granularity.
+The University of York has produced a graphical editor for creating graphs and graph programs. The editor depends on a compiler to produce the resultant graph, also made at the University of York. Both these tools are planned to be used by students in the coming academic year (2016/2017) for the GRAT (Graph Tranformations) module taught there.
+The aim of this project is to show the intermediate steps of the program, so that correctness of the compiler and the graphical editor can be ensured, and also so that students using these tools, learning how graph programs work, can see how the process works with a finer granularity.
 \section{Ethics}
 The project discussed has very few ethical considerations. It is not related to defence and there are no safety or security concerns.
 
@@ -77,24 +83,24 @@ Figure \ref{fig:simple_rule} on page \pageref{fig:simple_rule} shows a simple ru
 \centering
 \begin{tikzpicture}[scale=2]
   \node (n1) [vertex, label=below:{1}] at (0, 0) {};
-  \node (n2) [vertex, label=below:{2}] at (1, 0) {};
-  \node (n3) [vertex, label=below:{3}] at (2, 0) {};
+  \node (n2) [vertex, label=below:{2}] at (0.5, 0) {};
+  \node (n3) [vertex, label=below:{3}] at (1, 0) {};
   \path [edge] (n1) edge node {} (n2);
   \path [edge] (n2) edge node {} (n3);
-  \node (l) [graph, fit={(n1) (n2) (n3)}, label=below:{LHS}] {};
+  \node (l) [graph_small, fit={(n1) (n2) (n3)}, label=below:{LHS}] {};
   
-  \node (n4) [vertex, label=below:{1}] at (3, 0) {};
-  \node (n5) [vertex, label=below:{2}] at (4, 0) {};
-  \node (n6) [vertex, label=below:{2}] at (5, 0) {};
-  \node (k) [graph, fit={(n4) (n5) (n6)}, label=below:{Interface}] {};
+  \node (n4) [vertex, label=below:{1}] at (2, 0) {};
+  \node (n5) [vertex, label=below:{2}] at (2.5, 0) {};
+  \node (n6) [vertex, label=below:{3}] at (3, 0) {};
+  \node (k) [graph_small, fit={(n4) (n5) (n6)}, label=below:{Interface}] {};
   
-  \node (n7) [vertex, label=below:{1}] at (6, 0) {};
-  \node (n8) [vertex, label=below:{2}] at (7, 0) {};
-  \node (n9) [vertex, label=below:{2}] at (8, 0) {};
+  \node (n7) [vertex, label=below:{1}] at (4, 0) {};
+  \node (n8) [vertex, label=below:{2}] at (4.5, 0) {};
+  \node (n9) [vertex, label=below:{3}] at (5, 0) {};
   \path [edge] (n7) edge node {} (n8);
   \path [edge] (n8) edge node {} (n9);
-  \path [edge] (n7) edge node {} (n9);
-  \node (r) [graph, fit={(n7) (n8) (n9)}, label=below:{RHS}] {};
+  \path [edge'] (n7) edge node {} (n9);
+  \node (r) [graph_small, fit={(n7) (n8) (n9)}, label=below:{RHS}] {};
 \end{tikzpicture}
 \caption{Rule Example}
 \end{figure}
@@ -106,15 +112,15 @@ Figure \ref{fig:simple_rule} on page \pageref{fig:simple_rule} shows a simple ru
   \node (n1) [vertex, label=below:{1}] at (0, 0) {};
   \node (n2) [vertex, label=below:{2}] at (1, 0) {};
   \path [edge] (n1) edge node {} (n2);
-  \node (l) [graph, fit={(n1) (n2)}, label=below:{LHS}] {};
+  \node (l) [graph_small, fit={(n1) (n2)}, label=below:{LHS}] {};
   
   \node (n7) [vertex, label=below:{1}] at (2, 0) {};
-  \node (n8) [vertex, label=below:{2}] at (3, 0) {};
-  \node (n9) [vertex, label=below:{2}] at (4, 0) {};
+  \node (n8) [vertex, label=below:{2}] at (2.5, 0) {};
+  \node (n9) [vertex, label=below:{3}] at (3, 0) {};
   \path [edge] (n7) edge node {} (n8);
   \path [edge] (n8) edge node {} (n9);
-  \path [edge] (n7) edge node {} (n9);
-  \node (r) [graph, fit={(n7) (n8) (n9)}, label=below:{RHS}] {};
+  \path [edge'] (n7) edge node {} (n9);
+  \node (r) [graph_small, fit={(n7) (n8) (n9)}, label=below:{RHS}] {};
 \end{tikzpicture}
 \caption{Rule Example without Interface Graph}
 \end{figure}
@@ -130,35 +136,35 @@ GP allows the application of \emph{programs} to graphs. A program is made up of 
 % ~ADD: Make the code portion of this picture truetype
 % ~CHECK: Make sure this displays how it should (https://www.cs.york.ac.uk/plasma/wiki/images/5/5c/ExampleGraphProgramSimple_Dijkstra.png)
 \begin{tikzpicture}[scale=2]
-  \node (code) at (0, 1.5) {$main = InitTags!; Reduce$};
-  \node (rule_1) at (0, 1) {$InitTags(a,b,c,n : int) = $};
+  \node (code) at (0, 3.5) {$main = InitTags!; Reduce$};
+  \node (rule_1) at (0, 2.8) {$InitTags(a,b,c,n : int) = $};
 
-  \node (n1) [vertex, label=below:{1}] at (0, 0) {a_n};
-  \node (n2) [vertex, label=below:{2}] at (1, 0) {c};
+  \node (n1) [vertex, label=below:{1}] at (0, 2.1) {$a_n$};
+  \node (n2) [vertex, label=below:{2}] at (1, 2.1) {c};
   \path [edge] (n1) edge node[label=above:{b}] {} (n2);
   \node (r1_l) [rule, fit={(n1) (n2)}] {};
   
-  \node (n3) [vertex, label=below:{1}] at (2, 0) {a_n};
-  \node (n4) [vertex, label=below:{2}] at (3, 0) {c_n+b};
+  \node (n3) [vertex, label=below:{1}] at (2, 2.1) {$a_n$};
+  \node (n4) [vertex, label=below:{2}] at (3, 2.1) {$c_n+b$};
   \path [edge] (n3) edge node[label=above:{b}] {} (n4);
   \node (r1_r) [rule, fit={(n3) (n4)}] {};
   
-  \draw[-implies,double, thick] (r1_l) -- (r1_r);
+  \draw[derivation] (r1_r) -> (r1_l); % dafuq is this backwards bullshit?
   
-  \node (rule_2) at (0, 1) {$Reduce(a,b,c,n,i : int) = $};  
+  \node (rule_2) at (0, 1.5) {$Reduce(a,b,c,n,i : int) = $};  
   
-  \node (n5) [vertex, label=below:{1}] at (0, 1) {a_n};
-  \node (n6) [vertex, label=below:{2}] at (1, 1) {c_i};
+  \node (n5) [vertex, label=below:{1}] at (0, 0.8) {$a_n$};
+  \node (n6) [vertex, label=below:{2}] at (1, 0.8) {$c_i$};
   \path [edge] (n5) edge node[label=above:{b}] {} (n6);
   \node (r2_l) [rule, fit={(n5) (n6)}] {};
   
-  \node (n7) [vertex, label=below:{1}] at (2, 1) {a_n};
-  \node (n8) [vertex, label=below:{2}] at (3, 1) {c_n+b};
+  \node (n7) [vertex, label=below:{1}] at (2, 0.8) {$a_n$};
+  \node (n8) [vertex, label=below:{2}] at (3, 0.8) {$c_n+b$};
   \path [edge] (n7) edge node[label=above:{b}] {} (n8);
   \node (r2_r) [rule, fit={(n7) (n8)}] {};
   
-  \draw[-implies,double, thick] (r2_l) -- (r2_r);
-  \node (rule_2_condition) at (0, 2) {$where n+b < i$};  
+  \draw[derivation] (r2_r) -> (r2_l); % ~EDIT: Maybe use the deriviation tikz thing defined at the top.
+  \node (rule_2_condition) at (0, 0) {$where n+b < i$};  
 
 \end{tikzpicture}
 \caption{Simple Dijkstra Program Example}
@@ -166,16 +172,19 @@ GP allows the application of \emph{programs} to graphs. A program is made up of 
 
 The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds the shortest path to each node, using Dijkstra's algorithm for pathfinding. Running it on the host graph will give the intermediary graphs shown in \ref{fig:simple_program_example} on \pageref{fig:simple_program_example}. % ~ADD: Maybe break down the application of one rule. Show what's happening. Maybe somewhere else?
 
+\newgeometry{left=1cm,bottom=0.1cm}
+
 \begin{figure}
 \label{fig:simple_program_example}
 \centering
 % ~CHECK: Make sure this displays how it should.
+% ~ADD: Colour to illustrate changes?
 \begin{tikzpicture}[scale=2]
-  \node (n1_1) [vertex] at (0, 0) {1_0};
-  \node (n1_2) [vertex] at (1, 0) {2};
-  \node (n1_3) [vertex] at (1, 1) {3};
-  \node (n1_4) [vertex] at (1, 2) {4};
-  \node (n1_5) [vertex] at (2, 1) {5};
+  \node (n1_1) [vertex] at (0, 4) {$1\_0$};
+  \node (n1_2) [vertex] at (1, 4) {2};
+  \node (n1_3) [vertex] at (1, 5) {3};
+  \node (n1_4) [vertex] at (1, 6) {4};
+  \node (n1_5) [vertex] at (2, 4) {5};
   \path [edge] (n1_1) edge node[label=above:{4}] {} (n1_2);
   \path [edge] (n1_1) edge node[label=above:{6}] {} (n1_3);
   \path [edge] (n1_2) edge node[label=above:{1}] {} (n1_3);
@@ -185,11 +194,11 @@ The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds 
   \path [edge] (n1_4) edge node[label=above:{1}] {} (n1_5);
   \node (g0) [rule, fit={(n1_1) (n1_2) (n1_3) (n1_4) (n1_5)}, label=below:{Host Graph}] {};
   
-  \node (n2_1) [vertex] at (0, 0) {1_0}; % probably have to change these coordinates.
-  \node (n2_2) [vertex] at (1, 0) {2_4};
-  \node (n2_3) [vertex] at (1, 1) {3};
-  \node (n2_4) [vertex] at (1, 2) {4};
-  \node (n2_5) [vertex] at (2, 1) {5};
+  \node (n2_1) [vertex] at (5, 4) {$1\_0$}; % probably have to change these coordinates.
+  \node (n2_2) [vertex] at (6, 4) {$2\_4$};
+  \node (n2_3) [vertex] at (6, 5) {3};
+  \node (n2_4) [vertex] at (6, 6) {4};
+  \node (n2_5) [vertex] at (7, 5) {5};
   \path [edge] (n2_1) edge node[label=above:{4}] {} (n2_2);
   \path [edge] (n2_1) edge node[label=above:{6}] {} (n2_3);
   \path [edge] (n2_2) edge node[label=above:{1}] {} (n2_3);
@@ -199,11 +208,11 @@ The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds 
   \path [edge] (n2_4) edge node[label=above:{1}] {} (n2_5);
   \node (g1) [rule, fit={(n2_1) (n2_2) (n2_3) (n2_4) (n2_5)}, label=below:{Graph after one application of InitTags}] {};
   
-  \node (n3_1) [vertex] at (0, 0) {1_0}; % probably have to change these coordinates.
-  \node (n3_2) [vertex] at (1, 0) {2_4};
-  \node (n3_3) [vertex] at (1, 1) {3_6};
-  \node (n3_4) [vertex] at (1, 2) {4_8};
-  \node (n3_5) [vertex] at (2, 1) {5_10};
+  \node (n3_1) [vertex] at (0, 0) {$1\_0$}; % probably have to change these coordinates.
+  \node (n3_2) [vertex] at (1, 0) {$2\_4$};
+  \node (n3_3) [vertex] at (1, 1) {$3\_6$};
+  \node (n3_4) [vertex] at (1, 2) {$4\_8$};
+  \node (n3_5) [vertex] at (2, 1) {$5\_10$};
   \path [edge] (n3_1) edge node[label=above:{4}] {} (n3_2);
   \path [edge] (n3_1) edge node[label=above:{6}] {} (n3_3);
   \path [edge] (n3_2) edge node[label=above:{1}] {} (n3_3);
@@ -213,11 +222,11 @@ The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds 
   \path [edge] (n3_4) edge node[label=above:{1}] {} (n3_5);
   \node (gx) [rule, fit={(n3_1) (n3_2) (n3_3) (n3_4) (n3_5)}, label=below:{Graph after all possible applications of InitTags}] {}; 
   
-  \node (n4_1) [vertex] at (0, 0) {1_0}; % probably have to change these coordinates.
-  \node (n4_2) [vertex] at (1, 0) {2_4};
-  \node (n4_3) [vertex] at (1, 1) {3_5};
-  \node (n4_4) [vertex] at (1, 2) {4_7};
-  \node (n4_5) [vertex] at (2, 1) {5_8};
+  \node (n4_1) [vertex] at (5, 0) {$1\_0$}; % probably have to change these coordinates.
+  \node (n4_2) [vertex] at (6, 0) {$2\_4$};
+  \node (n4_3) [vertex] at (6, 1) {$3\_5$};
+  \node (n4_4) [vertex] at (6, 2) {$4\_7$};
+  \node (n4_5) [vertex] at (7, 1) {$5\_8$};
   \path [edge] (n4_1) edge node[label=above:{4}] {} (n4_2);
   \path [edge] (n4_1) edge node[label=above:{6}] {} (n4_3);
   \path [edge] (n4_2) edge node[label=above:{1}] {} (n4_3);
@@ -231,21 +240,34 @@ The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds 
 \caption{Simple Dijkstra Program Example}
 \end{figure}
 
-% ~ADD: first few iterations of this program on an example host graph.
+\restoregeometry
 
+\subsection{GP2 Compiler}
 GP2 has a number of differences in the way in which it was implemented. As well as trying to address the issues of maintainability and usability, several features were added.
-Instead of using an abstract machine, GP2 generates C code directly \cite{chris_compiler}, which removes the reliance on YAM, the YAM compiler, and YAM graph and program formats. It means that any C compiler can be used to generate the bytecode. It also attempts to standardise and document the format of graphs and programs that it takes. This means that tools to generate graphs either graphically or programmatically can be created without reducing modularity or creating complexity and interdependance between the components of the system \cite{gp2_ide}.
+Instead of using an abstract machine, the GP2 compiler generates C code directly \cite{chris_compiler}, which removes the reliance on YAM, the YAM compiler, and YAM graph and program formats. It means that any C compiler can be used to generate the bytecode. It also attempts to standardise and document the format of graphs and programs that it takes. This means that tools to generate graphs either graphically or programmatically can be created without reducing modularity or creating complexity and interdependance between the components of the system \cite{gp2_ide}.
 
 GP2 no longer enforces non-detereministic execution \cite[p. 15]{gp2_ide}, and doesn't backtrack to reach all possible solutions. This was done to achieve a higher level of implementation efficiency \cite[p. 15]{chris_compiler}, but sacrifices completeness.
-\emph{TO~ADD: mention the haskell interpreter but say it's not `official'.} % ~MENTION: no longer non-deterministic. no backtracking and no longer the case that all solutions will be reached. Maybe mention the haskel one and its optional backtracking.
+
+The GP2 compiler parses the program and host graph files, and generates a C code representation of the program, which can then be run.
 
 \subsection{GP2 Editor}
 The GP2 graphical editor for creating graphs and graph programs is currently under development. It will allow for the creation of graphs graphically, rather than textually, and it will allow for the creation of programs textually, and their rules graphically, assigning the LHS and RHS of the rules. In contrast with the GP1 editor, the GP2 editor will also include functionality to highlight nodes.
 
 \section{Tracing and Debugging}
-Tracing through the steps of a program has been around since programs themselves. % ~FIND: origins of tracing for debugging
-It allows programmers to ensure that each step is procuding the right results and allows a more detailed insight into the workings of a program. This is done by logging information about the execution of a program that will be useful for debugging or diagnostics. 
-Formal methods have been discussed as far back as the 70s \cite{psych_debug, code_walkthroughs}. 
+There are several techniques available to software developers when attempting to track down the locations of errors they've made. This process is called debugging, and many of the techniques involve outputting information about the program and its state throughout its execution. Other techniques involve dumping the last-stable memory at the point of a program crashing, which will then be analysed. 
+
+\subsection{Tracing}
+Tracing through the steps of a program has been around since programs themselves. The BASIC programming language had a command \emph{TRON}, short for TRace ON, which print the line numbers of each command as the program ran. 
+Tracing allows programmers to ensure that each step is procuding the right results and allows a more detailed insight into the workings of a program. This is done by logging information about the execution of a program that will be useful for debugging or diagnostics, formal methods of which have been discussed as far back as the 70s \cite{psych_debug, code_walkthroughs}.
+
+Although tracing, when as simple as possible, can be merely the addition of a few print statements, when applied throughout a program as a debugging tool, because tracing is generally such a low-level process, there's potential for a vast amount of logging messages \cite{}, which can impact performance. Usually programs have either run-time or compile-time options for turning off debugging to combat this. 
+
+The trace is also usually only seen by the developer of a system, and so there is no need to have the messages be readable by, or understandable to, the users. This means it can be cheap to implement. However, due to the fact that tracing is a cross-cutting concern \cite{}, meaning that is is involved all throughout the program, it's had to decouple and modularise.
+
+The points within the program where information is divulged are referred to as tracepoints. They are hooking mechanisms which allow for tracing with little overhead when disabled, but that can be enabled at run-time and will provide static tracing \cite{tracing_book}.
+
+\subsection{Breakpoints}
+Breakpoints allow for the stopping or pausing of a program part of the way through its execution. This is done to allow usually to obtain knowledge about the state of the program at certain points throughout the process. \emph{Instruction Breakpoints} interrupt the program before an instruction is executed, but there are also \emph{Conditional Breakpoints}, or \emph{Watchpoints}, which trigger upon events such as reading from, or writing to, specific memory locations, or upon certain keystrokes.
 
 % ~FIND: some papers on debugging
 % ~READ: psych_debug and code_walkthroughs for stuff to say about tracing/debugging
@@ -253,40 +275,43 @@ Formal methods have been discussed as far back as the 70s \cite{psych_debug, cod
 
 % ~FIND, ~MENTION: a paper on TRON and mention it briefly.
 
-% ~MENTION: tracing is a cross-cutting concern. It's difficult to decouple. It involves lots of the code.
-% ~MENTION: due to tracing being low-level, the potential volume of logging is higher, which can have performace concerns. Usually this means the option of having it turned off at run- (or compile-) time, however because this is a feature of the editor, this is a bit awkward. 
-% ~MENTION: Normally the tracing results are only really to be used be the developer and so don't need to be localised or presented in a particularly user-friendly way. However, this project the tracing is for students who don't know the graphs. So the tracing has to be presented in a way that's understandable.
-% ~IDEA: Maybe have compile-time setting whereby *debugging* tracing can be turned off, but the *learning* tracing is still on. Or maybe have settings for both. debugging on/off. step production on/off. For performance reasons.
-
 % END OF LITERATURE REVIEW
 
 \chapter{Approach}
+% ~IDEA: Maybe have compile-time setting whereby *debugging* tracing can be turned off, but the *learning* tracing is still on. Or maybe have settings for both. debugging on/off. step production on/off. For performance reasons.
 \section{Requirement Identification}
 % ~2000 words
+
+\subsection{Users and Stakeholders}
+The users of GP2 as it stands are predominantly students at the University of York, as well as some researchers in the field of graph transformations. These students use it to get a hands-on appreciation of both graph transformation generally, and GP2 specifically.
+
+Any tracing will need to not have negative impacts on the currently existing system. Ideally, as little effect on efficiency and performace as possible should be made to the compiler. Also, any changes made to the editor should serve only to enhance the user's understanding of the underlying process, and should be avoidable if they so choose.
+
+\subsection{Requirements}
+
+It is critical to correctly identify the requirements for a system to be determined succesful. It also means that throughout the design process, there are key features to be kept in mind. 
 \begin{enumerate}
-	\item Rules must be able to be stepped through one at a time.
- 	\item The current rule must be made apparent graphically somehow.
-	\item \ldots
+	\item A program must be able to be stepped through, that is, a portion of the program (step) must be able to be run on either the host graph, or the resultant graph of a previous step's execution.
+	\item These steps would ideally be of specifiable sizes.
+	\item These steps must be displayed graphically in the GP2 Editor.
+	\item These steps would ideally be displayed in such a way to highlight themselves.
 \end{enumerate}
+
+\subsection{User Scenarios}
+
+
 \section{Design}
 % ~3333 words
-\begin{itemize}
-	\item Lifecycle
- 	\item Engineering approach
- 	\item Time management and/or general plan
-	\item \ldots
-\end{itemize}
- 
-\subsection{Tools}
-Not a lot really.
-\begin{itemize}
-  \item Git
-  \item Some C compiler/IDE/something or another
-  \item Dependencies for GP-Editor
-  \item \ldots
-\end{itemize}
-\section{Implementation}
 
+% ~MENTION: tools used (git? GP2 compiler and) or at least say I didn't need no tools.
+
+\subsection{Maintainability}
+Writing maintainable code involves ensuring that the intent behind each procedure is as clear as possible to a programmer, familiar or unfamiliar with the system. This can be done with clear and useful naming of variables and functions, and with appropriate levels of comments documenting the intent behind the code.
+
+\subsubsection{Lifecycle}
+\subsubsection{Engineering approach}
+ 
+\section{Implementation}
 
 \begin{lstlisting}[label=c_1, caption=Placeholder C Code]
 *foo = &bar;
@@ -299,7 +324,7 @@ Not a lot really.
 % ~1333 words
 \section{Future Work}
 
-% \bibliography{references}
+\bibliography{references}
 
 \chapter{Appendices}
 \end{document}
