@@ -11,7 +11,9 @@
 
 \documentclass{UoYCSproject}
 \usepackage{geometry}
-% Tikz Setup
+
+% -----------
+% Tikz Setup 
 \usepackage{tikz}
 \usetikzlibrary{ matrix,      % For easy node positioning
                  fit,         % For easily fitting nodes inside another one
@@ -25,17 +27,19 @@
 \tikzstyle{graph} = [rectangle, draw=black, inner sep=1cm]
 \tikzstyle{rule} = [rectangle, inner sep=1cm]
 \tikzstyle{derivation} = [-implies, double, thick]
+
+% ---------------
 % Listings Setup
 \usepackage{listings}
 \renewcommand{\lstlistingname}{C Code}
 
 \author{Huw Taylor}
-\title{Tracing and Debugging GP2}
+\title{Tracing GP2 Execution} %TODO ~AMMEND: is 'Execution' needed? Maybe just Tracing GP2?
 \date{\today}
 \supervisor{Dr. Detlef Plump}
 \MEng
 \wordcount
-% ~CHECK: The bibTex reference LaTeX word count has the `accessed` field updated.
+%TODO ~CHECK: The bibTex reference LaTeX word count has the `accessed` field updated.
 % ~16000 words (55 pages) total
 \pagecount
 \abstract{
@@ -43,9 +47,8 @@
 
 }
 \acknowledgements{
-% Detlef
-% Chris Bak
-% Ivaylo... ¬_¬
+I would like to thank Christopher Bak for his support throughout the project. His advice on the workings of the GP2 compiler has been invaluable.
+% Detlef?
 }
 
 \begin{document}
@@ -60,15 +63,15 @@
 The University of York has produced a graphical editor for creating graphs and graph programs. The editor depends on a compiler to produce the resultant graph, also made at the University of York. Both these tools are planned to be used by students in the coming academic year (2016/2017) for the GRAT (Graph Tranformations) module taught there.
 The aim of this project is to show the intermediate steps of the program, so that correctness of the compiler and the graphical editor can be ensured, and also so that students using these tools, learning how graph programs work, can see how the process works with a finer granularity.
 \section{Ethics}
-The project discussed has very few ethical considerations. It is not related to defence and there are no safety or security concerns.
+The project discussed has very few ethical considerations. It is not related to defence and there are no safety or security concerns. No humans or animals are involved in its development.
 
 \chapter{Literature Review}
 % ~4000 words
-% ~CHECK: Shows that you know what is happening in your field 
-% ~CHECK: Justifies why your work is interesting or important 
-% ~CHECK: establishes the theoretical framework/context for your work 
-% ~CHECK: defends your choice of methodology 
-% ~CHECK: avoids repeating previous researchers’ mistakes
+%TODO ~CHECK: Shows that you know what is happening in your field 
+%TODO ~CHECK: Justifies why your work is interesting or important 
+%TODO ~CHECK: establishes the theoretical framework/context for your work 
+%TODO ~CHECK: defends your choice of methodology 
+%TODO ~CHECK: avoids repeating previous researchers’ mistakes
 \section{Graph Programming}
 \subsection{Graph Transformations}
 A graph is a visual way of representing data and relationships. The formal definition is a set of vertices (nodes) \emph{V}, a set of edges \emph{E}, and a set of labels \emph{L}. Additionally \emph{source} and \emph{target} functions associate edges with nodes, and a \emph{label} function, which assigns labels to edges and nodes.
@@ -125,16 +128,16 @@ Figure \ref{fig:simple_rule} on page \pageref{fig:simple_rule} shows a simple ru
 \caption{Rule Example without Interface Graph}
 \end{figure}
 
-% ~READ, ~ADD: https://www.cs.york.ac.uk/plasma/wiki/index.php?title=GP_%28Graph_Programs%29 Lots of relevant papers and a couple of example programs i can steal and reference.
+%TODO ~READ, ~ADD: https://www.cs.york.ac.uk/plasma/wiki/index.php?title=GP_%28Graph_Programs%29 Lots of relevant papers and a couple of example programs i can steal and reference.
 \subsection{Graph Programs}
-The University of York has developed a graph programming language \emph{GP} \cite{gp1}, and has developed a new implementation \emph{GP2}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. % ~ADD, ~REFERENCE: Greg Manning Paper
+The University of York has developed a graph programming language \emph{GP} \cite{gp1}, and has developed a new implementation \emph{GP2}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. %TODO ~ADD, ~REFERENCE: Greg Manning Paper
 GP allows the application of \emph{programs} to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{Host Graph}. The resulting graph is known as the \emph{Result Graph}. A simple program could just be the continued application of a single rule.
 
 \begin{figure}
 \label{fig:simple_program}
 \centering
-% ~ADD: Make the code portion of this picture truetype
-% ~CHECK: Make sure this displays how it should (https://www.cs.york.ac.uk/plasma/wiki/images/5/5c/ExampleGraphProgramSimple_Dijkstra.png)
+%TODO ~ADD: Make the code portion of this picture truetype
+%TODO ~CHECK: Make sure this displays how it should (https://www.cs.york.ac.uk/plasma/wiki/images/5/5c/ExampleGraphProgramSimple_Dijkstra.png)
 \begin{tikzpicture}[scale=2]
   \node (code) at (0, 3.5) {$main = InitTags!; Reduce$};
   \node (rule_1) at (0, 2.8) {$InitTags(a,b,c,n : int) = $};
@@ -170,15 +173,15 @@ GP allows the application of \emph{programs} to graphs. A program is made up of 
 \caption{Simple Dijkstra Program Example}
 \end{figure}
 
-The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds the shortest path to each node, using Dijkstra's algorithm for pathfinding. Running it on the host graph will give the intermediary graphs shown in \ref{fig:simple_program_example} on \pageref{fig:simple_program_example}. % ~ADD: Maybe break down the application of one rule. Show what's happening. Maybe somewhere else?
+The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds the shortest path to each node, using Dijkstra's algorithm for pathfinding. Running it on the host graph will give the intermediary graphs shown in \ref{fig:simple_program_example} on \pageref{fig:simple_program_example}. %TODO ~ADD: Maybe break down the application of one rule. Show what's happening. Maybe somewhere else?
 
 \newgeometry{left=1cm,bottom=0.1cm}
 
 \begin{figure}
 \label{fig:simple_program_example}
 \centering
-% ~CHECK: Make sure this displays how it should.
-% ~ADD: Colour to illustrate changes?
+%TODO ~CHECK: Make sure this displays how it should.
+%TODO ~ADD: Colour to illustrate changes?
 \begin{tikzpicture}[scale=2]
   \node (n1_1) [vertex] at (0, 4) {$1\_0$};
   \node (n1_2) [vertex] at (1, 4) {2};
@@ -242,7 +245,7 @@ The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds 
 
 \restoregeometry
 
-\subsection{GP2 Compiler}
+\section{GP2 Compiler}
 GP2 has a number of differences in the way in which it was implemented. As well as trying to address the issues of maintainability and usability, several features were added.
 Instead of using an abstract machine, the GP2 compiler generates C code directly \cite{chris_compiler}, which removes the reliance on YAM, the YAM compiler, and YAM graph and program formats. It means that any C compiler can be used to generate the bytecode. It also attempts to standardise and document the format of graphs and programs that it takes. This means that tools to generate graphs either graphically or programmatically can be created without reducing modularity or creating complexity and interdependance between the components of the system \cite{gp2_ide}.
 
@@ -250,10 +253,12 @@ GP2 no longer enforces non-detereministic execution \cite[p. 15]{gp2_ide}, and d
 
 The GP2 compiler parses the program and host graph files, and generates a C code representation of the program, which can then be run.
 
-\subsection{GP2 Editor}
-The GP2 graphical editor for creating graphs and graph programs is currently under development. It will allow for the creation of graphs graphically, rather than textually, and it will allow for the creation of programs textually, and their rules graphically, assigning the LHS and RHS of the rules. In contrast with the GP1 editor, the GP2 editor will also include functionality to highlight nodes.
+%TODO ~ADD: more detailed explanation of how the GP2 compiler works.
 
-\section{Tracing and Debugging}
+\section{GP2 Editor}
+The GP2 graphical editor for creating graphs and graph programs is currently under development. It will allow for the creation of graphs graphically, rather than textually, and it will allow for the creation of programs textually, and their rules graphically, assigning the LHS and RHS of the rules. In contrast with the GP1 editor, the GP2 editor will also include functionality to highlight nodes. 
+
+\section{Program Tracing}
 There are several techniques available to software developers when attempting to track down the locations of errors they've made. This process is called debugging, and many of the techniques involve outputting information about the program and its state throughout its execution. Other techniques involve dumping the last-stable memory at the point of a program crashing, which will then be analysed. 
 
 \subsection{Tracing}
@@ -269,49 +274,45 @@ The points within the program where information is divulged are referred to as t
 \subsection{Breakpoints}
 Breakpoints allow for the stopping or pausing of a program part of the way through its execution. This is done to allow usually to obtain knowledge about the state of the program at certain points throughout the process. \emph{Instruction Breakpoints} interrupt the program before an instruction is executed, but there are also \emph{Conditional Breakpoints}, or \emph{Watchpoints}, which trigger upon events such as reading from, or writing to, specific memory locations, or upon certain keystrokes.
 
-% ~FIND: some papers on debugging
-% ~READ: psych_debug and code_walkthroughs for stuff to say about tracing/debugging
-% ~READ: https://bitbucket.org/pypy/extradoc/src/tip/talk/pepm2011/bolz-allocation-removal.pdf (reference #16 might be good)
+%TODO ~FIND: some papers on debugging
+%TODO ~READ: psych_debug and code_walkthroughs for stuff to say about tracing/debugging
+%TODO ~READ: https://bitbucket.org/pypy/extradoc/src/tip/talk/pepm2011/bolz-allocation-removal.pdf (reference #16 might be good)
 
-% ~FIND, ~MENTION: a paper on TRON and mention it briefly.
+%TODO ~FIND, ~MENTION: a paper on TRON and mention it briefly.
 
 % END OF LITERATURE REVIEW
 
-\chapter{Approach}
-% ~IDEA: Maybe have compile-time setting whereby *debugging* tracing can be turned off, but the *learning* tracing is still on. Or maybe have settings for both. debugging on/off. step production on/off. For performance reasons.
+\chapter{Design}
 \section{Requirement Identification}
-% ~2000 words
+% ~2000 words (Problem analysis)
+% ~3333 words (between Design *and* Implementation)
 
-\subsection{Users and Stakeholders}
+\subsection{Users}
 The users of GP2 as it stands are predominantly students at the University of York, as well as some researchers in the field of graph transformations. These students use it to get a hands-on appreciation of both graph transformation generally, and GP2 specifically.
 
-Any tracing will need to not have negative impacts on the currently existing system. Ideally, as little effect on efficiency and performace as possible should be made to the compiler. Also, any changes made to the editor should serve only to enhance the user's understanding of the underlying process, and should be avoidable if they so choose.
+Any tracing will need to not have negative impacts on the currently existing system. Ideally, as little effect on efficiency and performace as possible should be made to the compiler, and to the generated code running the Graph Program. Also, any changes made to the editor should serve only to enhance the user's understanding of the underlying process, and should be avoidable if they so choose.
 
 \subsection{Requirements}
-
 It is critical to correctly identify the requirements for a system to be determined succesful. It also means that throughout the design process, there are key features to be kept in mind. 
 \begin{enumerate}
 	\item A program must be able to be stepped through, that is, a portion of the program (step) must be able to be run on either the host graph, or the resultant graph of a previous step's execution.
 	\item These steps would ideally be of specifiable sizes.
-	\item These steps must be displayed graphically in the GP2 Editor.
+	\item These steps must be able to be displayed graphically in the GP2 Editor.
 	\item These steps would ideally be displayed in such a way to highlight themselves.
 \end{enumerate}
 
-\subsection{User Scenarios}
 
 
-\section{Design}
-% ~3333 words
-
-% ~MENTION: tools used (git? GP2 compiler and) or at least say I didn't need no tools.
-
-\subsection{Maintainability}
+\section{High-Level Design}
 Writing maintainable code involves ensuring that the intent behind each procedure is as clear as possible to a programmer, familiar or unfamiliar with the system. This can be done with clear and useful naming of variables and functions, and with appropriate levels of comments documenting the intent behind the code.
 
-\subsubsection{Lifecycle}
-\subsubsection{Engineering approach}
+% There were 
  
-\section{Implementation}
+\chapter{Implementation}
+% ~3333 words (between Design *and* Implementation)
+
+% 1. Find the parts of the code that generate different sizes of step.
+% 2. Implement breakpoints after each of them.
 
 \begin{lstlisting}[label=c_1, caption=Placeholder C Code]
 *foo = &bar;
@@ -320,7 +321,11 @@ Writing maintainable code involves ensuring that the intent behind each procedur
 
 \chapter{Evaluation}
 % ~3333 words
-\chapter{Conclusions}
+\section{Performance}
+%TODO ~ADD: Performance Benchmarks
+
+
+\chapter{Conclusion}
 % ~1333 words
 \section{Future Work}
 
