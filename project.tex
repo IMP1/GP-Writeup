@@ -60,8 +60,17 @@ I would like to thank Christopher Bak for his support throughout the project. Hi
 \chapter{Introduction}
 % ~1333 words
 \section{Motivation}
-The University of York has produced a graphical editor for creating graphs and graph programs. The editor depends on a compiler to produce the resultant graph, also made at the University of York. Both these tools are planned to be used by students in the coming academic year (2016/2017) for the GRAT (Graph Tranformations) module taught there.
-The aim of this project is to show the intermediate steps of the program, so that correctness of the compiler and the graphical editor can be ensured, and also so that students using these tools, learning how graph programs work, can see how the process works with a finer granularity.
+GP was developed to provide a graph programming language that is expressive to solve complex graph problems, while also having a simple enough syntax to allow for formal reasoning. %TODO ~ADD: more stuff about GP (page 18 on https://www.cs.york.ac.uk/ftpdir/reports/2007/YCST/15/YCST-2007-15.pdf (gp_lang) and page 1 on https://www.cs.york.ac.uk/plasma/publications/pdf/Plump.CAI.09.pdf (gp1))
+
+GP2 builds upon GP. Using case studies in which GP was used, it adds  \cite{gp2_design}.
+%TODO ~ADD: what GP2 adds (page 1 on https://www.cs.york.ac.uk/plasma/publications/pdf/Plump.WRS.11.pdf)
+
+The University of York has produced a compiler for GP2. %TODO ~MENTION: a bit about the compiler. Doesn't have non-determinism properly, or rather doesn't allow for full exploration of the solution space.
+
+The University of York has produced a graphical editor for creating graphs and graph programs. The editor depends on the compiler to execute the program on the host graph, thereby producing the resultant graph. It displays the graphs %TODO ~ADD: say more about the editor. The horrible horrible editor.
+
+The aim of this project is to show the execution of the program. As it is, the entire program is run, and the resulting graph is saved. This project aims to show the intermediate steps of the program. This will allow the correctness of the program to be ensured, and also so that people using these tools, who may not have a complete understanding of how graph programs work, can see the process with a finer granularity.
+
 \section{Ethics}
 The project discussed has very few ethical considerations. It is not related to defence and there are no safety or security concerns. No humans or animals are involved in its development.
 
@@ -75,11 +84,13 @@ The project discussed has very few ethical considerations. It is not related to 
 \section{Graph Programming}
 \subsection{Graph Transformations}
 A graph is a visual way of representing data and relationships. The formal definition is a set of vertices (nodes) \emph{V}, a set of edges \emph{E}, and a set of labels \emph{L}. Additionally \emph{source} and \emph{target} functions associate edges with nodes, and a \emph{label} function, which assigns labels to edges and nodes.
-This field was first proposed in the 1970s by Ehrig, Pfender \& Schneider \cite{grat_origin}.
-\emph{TO~ADD: briefly mention double-pushout/single-pushout methods and give graphical examples.} % ~ADD: references to double-pushout and single-pushout methods, as well as contributions to graph theory in general
+Graph theory is said to go back as far as the 1730s, with The K{\"o}nigsberg Bridge problem being regarded as the topic for the first paper on graph theory ever written \cite{grathe_origin}.
+\emph{TO~ADD: briefly mention double-pushout/single-pushout methods and give graphical examples.} %TODO ~ADD: references to double-pushout and single-pushout methods, as well as contributions to graph theory in general
 The mathematical theory of Graph Transformation allows the transformation of graphs by way of rules. Rules are applied to graphs. They include a LHS (Left-Hand Side) graph, and RHS (Right-Hand Side) graph and an interface graph, which connects nodes in the LHS to nodes in the RHS. There is a convention that if the interface graph is ommited then it is inferred that it comprises the common labelled nodes in both the LHS and RHS.
 
-Figure \ref{fig:simple_rule} on page \pageref{fig:simple_rule} shows a simple rule that creates a transative graph, where every node accessible by another has a direct edge going to it. Figure \ref{fig:simple_rule_sans_k} on page \pageref{fig:simple_rule_sans_k} shows the same rule without its interface graph.
+Figure \ref{fig:simple_rule} on page \pageref{fig:simple_rule} shows a simple rule that, given a non-empty host graph, creates a transitive graph, where every node accessible by another has a direct edge going to it. Figure \ref{fig:simple_rule_sans_k} on page \pageref{fig:simple_rule_sans_k} shows the same rule without its interface graph.
+
+%TODO ~ADD: "construction of rule application" how a rule works. Find the match, apply the rule. Morphisms and pushouts, which will be explained by this point.
 
 \begin{figure}
 \label{fig:simple_rule}
@@ -130,8 +141,9 @@ Figure \ref{fig:simple_rule} on page \pageref{fig:simple_rule} shows a simple ru
 
 %TODO ~READ, ~ADD: https://www.cs.york.ac.uk/plasma/wiki/index.php?title=GP_%28Graph_Programs%29 Lots of relevant papers and a couple of example programs i can steal and reference.
 \subsection{Graph Programs}
-The University of York has developed a graph programming language \emph{GP} \cite{gp1}, and has developed a new implementation \emph{GP2}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. %TODO ~ADD, ~REFERENCE: Greg Manning Paper
-GP allows the application of \emph{programs} to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{Host Graph}. The resulting graph is known as the \emph{Result Graph}. A simple program could just be the continued application of a single rule.
+%TODO ~ADD desc
+The University of York has developed a graph programming language \emph{GP} \cite{gp1}, and has developed a new implementation \emph{"GP2"}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. %TODO ~ADD, ~REFERENCE: Greg Manning Paper
+GP allows the application of \emph{programs} to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{host graph}. The resulting graph is known as the \emph{result graph}. A simple program could just be the continued application of a single rule.
 
 \begin{figure}
 \label{fig:simple_program}
@@ -174,6 +186,7 @@ GP allows the application of \emph{programs} to graphs. A program is made up of 
 \end{figure}
 
 The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds the shortest path to each node, using Dijkstra's algorithm for pathfinding. Running it on the host graph will give the intermediary graphs shown in \ref{fig:simple_program_example} on \pageref{fig:simple_program_example}. %TODO ~ADD: Maybe break down the application of one rule. Show what's happening. Maybe somewhere else?
+%TODO ~AMMEND: Look at the GRAT slides and use the shortest distance program there (which uses GP2 stuff, rather than GP1 stuff).
 
 \newgeometry{left=1cm,bottom=0.1cm}
 
@@ -246,7 +259,7 @@ The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds 
 \restoregeometry
 
 \section{GP2 Compiler}
-GP2 has a number of differences in the way in which it was implemented. As well as trying to address the issues of maintainability and usability, several features were added.
+GP2 has a number of differences in the way in which it was implemented. As well as trying to address the issues of maintainability and usability, several features were added. %TODO ~AMMEND: differences to what? We're not comparing to GP1. Say what it does and why it was made.
 Instead of using an abstract machine, the GP2 compiler generates C code directly \cite{chris_compiler}, which removes the reliance on YAM, the YAM compiler, and YAM graph and program formats. It means that any C compiler can be used to generate the bytecode. It also attempts to standardise and document the format of graphs and programs that it takes. This means that tools to generate graphs either graphically or programmatically can be created without reducing modularity or creating complexity and interdependance between the components of the system \cite{gp2_ide}.
 
 GP2 no longer enforces non-detereministic execution \cite[p. 15]{gp2_ide}, and doesn't backtrack to reach all possible solutions. This was done to achieve a higher level of implementation efficiency \cite[p. 15]{chris_compiler}, but sacrifices completeness.
@@ -256,7 +269,8 @@ The GP2 compiler parses the program and host graph files, and generates a C code
 %TODO ~ADD: more detailed explanation of how the GP2 compiler works.
 
 \section{GP2 Editor}
-The GP2 graphical editor for creating graphs and graph programs is currently under development. It will allow for the creation of graphs graphically, rather than textually, and it will allow for the creation of programs textually, and their rules graphically, assigning the LHS and RHS of the rules. In contrast with the GP1 editor, the GP2 editor will also include functionality to highlight nodes. 
+%TODO ~ADD: a screenshot
+The GP2 graphical editor for creating graphs and graph programs is currently under development. It will allow for the creation of graphs graphically, rather than textually, and it will allow for the creation of programs textually, and their rules graphically, assigning the LHS and RHS of the rules. In contrast with the GP1 editor, the GP2 editor will also include functionality to highlight nodes. %TODO ~MENTION: marks, rather than highlighting nodes.
 
 \section{Program Tracing}
 There are several techniques available to software developers when attempting to track down the locations of errors they've made. This process is called debugging, and many of the techniques involve outputting information about the program and its state throughout its execution. Other techniques involve dumping the last-stable memory at the point of a program crashing, which will then be analysed. 
@@ -265,9 +279,9 @@ There are several techniques available to software developers when attempting to
 Tracing through the steps of a program has been around since programs themselves. The BASIC programming language had a command \emph{TRON}, short for TRace ON, which print the line numbers of each command as the program ran. 
 Tracing allows programmers to ensure that each step is procuding the right results and allows a more detailed insight into the workings of a program. This is done by logging information about the execution of a program that will be useful for debugging or diagnostics, formal methods of which have been discussed as far back as the 70s \cite{psych_debug, code_walkthroughs}.
 
-Although tracing, when as simple as possible, can be merely the addition of a few print statements, when applied throughout a program as a debugging tool, because tracing is generally such a low-level process, there's potential for a vast amount of logging messages \cite{}, which can impact performance. Usually programs have either run-time or compile-time options for turning off debugging to combat this. 
+Although tracing, when as simple as possible, can be merely the addition of a few print statements, when applied throughout a program as a debugging tool, because tracing is generally such a low-level process, there's potential for a vast amount of logging messages \cite{}, which can impact performance. Usually programs have either run-time or compile-time options for turning off debugging to combat this. %TODO ~FIND: a paper or reference for the empty citation.
 
-The trace is also usually only seen by the developer of a system, and so there is no need to have the messages be readable by, or understandable to, the users. This means it can be cheap to implement. However, due to the fact that tracing is a cross-cutting concern \cite{}, meaning that is is involved all throughout the program, it's had to decouple and modularise.
+The trace is also usually only seen by the developer of a system, and so there is no need to have the messages be readable by, or understandable to, the users. This means it can be cheap to implement. However, due to the fact that tracing is a cross-cutting concern \cite{}, meaning that is is involved all throughout the program, it's had to decouple and modularise. %TODO ~FIND: a paper or reference for the empty citation.
 
 The points within the program where information is divulged are referred to as tracepoints. They are hooking mechanisms which allow for tracing with little overhead when disabled, but that can be enabled at run-time and will provide static tracing \cite{tracing_book}.
 
