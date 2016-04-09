@@ -1,5 +1,5 @@
-%--------
-% Notes:
+%-------
+% Notes
 %   ~ADD       : Add the following.
 %   ~REFERENCE : Reference the following paper/authors.
 %   ~FIND      : Find a paper regarding the following.
@@ -38,10 +38,10 @@
 \date{\today}
 \supervisor{Dr. Detlef Plump}
 \MEng
-\wordcount
 %TODO ~CHECK: The bibTex reference LaTeX word count has the `accessed` field updated.
+\wordcount{-1}
+\pagecount{-1}
 % ~16000 words (55 pages) total
-\pagecount
 \abstract{
 % ~66 words
 
@@ -60,10 +60,11 @@ I would like to thank Christopher Bak for his support throughout the project. Hi
 \chapter{Introduction}
 % ~1333 words
 \section{Motivation}
-GP was developed to provide a graph programming language that is expressive to solve complex graph problems, while also having a simple enough syntax to allow for formal reasoning. %TODO ~ADD: more stuff about GP (page 18 on https://www.cs.york.ac.uk/ftpdir/reports/2007/YCST/15/YCST-2007-15.pdf (gp_lang) and page 1 on https://www.cs.york.ac.uk/plasma/publications/pdf/Plump.CAI.09.pdf (gp1))
+GP is a graph programming language. It was developed to provide a language that is expressive enough to solve complex graph problems, while also having a simple enough syntax to allow for formal reasoning. Graphs and graph transformations have previously implemented in low-level languages, like C. This meant that it was more difficult to understand, verify, and implement\cite{gp_lang}. GP at its core has four commands that nevertheless allows every computable function on graphs to be implemented \cite{gp1}. These commands are a single application of a rule, sequential composition, loops, and branching. Loops are implemented in a run-for-as-long-as-possible style.
+%TODO ~ADD: more stuff about GP (page 18 on https://www.cs.york.ac.uk/ftpdir/reports/2007/YCST/15/YCST-2007-15.pdf (gp_lang) and page 1 on https://www.cs.york.ac.uk/plasma/publications/pdf/Plump.CAI.09.pdf (gp1))
 
-GP2 builds upon GP. Using case studies in which GP was used, it adds  \cite{gp2_design}.
-%TODO ~ADD: what GP2 adds (page 1 on https://www.cs.york.ac.uk/plasma/publications/pdf/Plump.WRS.11.pdf)
+GP2, the second iteration of GP, builds upon the first. It adds the marking of nodes with a colour, or a special 'any' colour; additional conditions that can be checked against in a rule's schema, including the indegree and outdegree of an edge, and whether there exists an edge between two nodes; and an additional branching mechanism: a try-then-else. In try-then-else and if-then-else branching, the condition is a set of rules schemata, and often alters the graph. If-then-else branching uses the graph before the 'if' condition is evaluated, and any changes are made, in the 'then' branch. In contrast, the try-then-else uses the \emph{result} of the 'try' condition in the 'then' branch. In both, the 'else' branch uses the graph before the condition is checked against \cite{gp2_design}.
+%TODO ~ADD: what GP2 adds (page 1 on https://www.cs.york.ac.uk/plasma/publications/pdf/Plump.WRS.11.pdf (gp2_design))
 
 The University of York has produced a compiler for GP2. %TODO ~MENTION: a bit about the compiler. Doesn't have non-determinism properly, or rather doesn't allow for full exploration of the solution space.
 
