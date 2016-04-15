@@ -38,7 +38,7 @@
 \date{\today}
 \supervisor{Dr. Detlef Plump}
 \MEng
-%TODO ~CHECK: The bibTex reference LaTeX word count has the `accessed` field updated.
+%TODO ~CHECK: The word/page counts are up to date.
 \wordcount{-1}
 \pagecount{-1}
 % ~16000 words (55 pages) total
@@ -72,6 +72,8 @@ The University of York has produced a graphical editor for creating graphs and g
 
 The aim of this project is to show the execution of the program. As it is, the entire program is run, and the resulting graph is saved. This project aims to show the intermediate steps of the program. This will allow the correctness of the program to be ensured, and also so that people using these tools, who may not have a complete understanding of how graph programs work, can see the process with a finer granularity.
 
+%TODO ~ADD: The benefits of being able to step through programs. 
+
 \section{Ethics}
 The project discussed has very few ethical considerations. It is not related to defence and there are no safety or security concerns. No humans or animals are involved in its development.
 
@@ -85,60 +87,14 @@ The project discussed has very few ethical considerations. It is not related to 
 \section{Graph Programming}
 \subsection{Graph Transformations}
 A graph is a visual way of representing data and relationships. The formal definition is a set of vertices (nodes) \emph{V}, a set of edges \emph{E}, and a set of labels \emph{L}. Additionally \emph{source} and \emph{target} functions associate edges with nodes, and a \emph{label} function, which assigns labels to edges and nodes.
-Graph theory is said to go back as far as the 1730s, with The K{\"o}nigsberg Bridge problem being regarded as the topic for the first paper on graph theory ever written \cite{grathe_origin}.
-\emph{TO~ADD: briefly mention double-pushout/single-pushout methods and give graphical examples.} %TODO ~ADD: references to double-pushout and single-pushout methods, as well as contributions to graph theory in general
+Graph theory is said to go back as far as the 1730s, with The K{\"o}nigsberg Bridge problem being regarded as the topic for the first paper on graph theory ever written \cite{grathe_origin}. %TODO ~ADD: references to double-pushout and single-pushout methods, as well as contributions to graph theory in general
 The mathematical theory of Graph Transformation allows the transformation of graphs by way of rules. Rules are applied to graphs. They include a LHS (Left-Hand Side) graph, and RHS (Right-Hand Side) graph and an interface graph, which connects nodes in the LHS to nodes in the RHS. There is a convention that if the interface graph is ommited then it is inferred that it comprises the common labelled nodes in both the LHS and RHS.
 
 Figure \ref{fig:simple_rule} on page \pageref{fig:simple_rule} shows a simple rule that, given a non-empty host graph, creates a transitive graph, where every node accessible by another has a direct edge going to it. Figure \ref{fig:simple_rule_sans_k} on page \pageref{fig:simple_rule_sans_k} shows the same rule without its interface graph.
 
 %TODO ~ADD: "construction of rule application" how a rule works. Find the match, apply the rule. Morphisms and pushouts, which will be explained by this point.
 
-\begin{figure}
-\label{fig:simple_rule}
-\centering
-\begin{tikzpicture}[scale=2]
-  \node (n1) [vertex, label=below:{1}] at (0, 0) {};
-  \node (n2) [vertex, label=below:{2}] at (0.5, 0) {};
-  \node (n3) [vertex, label=below:{3}] at (1, 0) {};
-  \path [edge] (n1) edge node {} (n2);
-  \path [edge] (n2) edge node {} (n3);
-  \node (l) [graph_small, fit={(n1) (n2) (n3)}, label=below:{LHS}] {};
-  
-  \node (n4) [vertex, label=below:{1}] at (2, 0) {};
-  \node (n5) [vertex, label=below:{2}] at (2.5, 0) {};
-  \node (n6) [vertex, label=below:{3}] at (3, 0) {};
-  \node (k) [graph_small, fit={(n4) (n5) (n6)}, label=below:{Interface}] {};
-  
-  \node (n7) [vertex, label=below:{1}] at (4, 0) {};
-  \node (n8) [vertex, label=below:{2}] at (4.5, 0) {};
-  \node (n9) [vertex, label=below:{3}] at (5, 0) {};
-  \path [edge] (n7) edge node {} (n8);
-  \path [edge] (n8) edge node {} (n9);
-  \path [edge'] (n7) edge node {} (n9);
-  \node (r) [graph_small, fit={(n7) (n8) (n9)}, label=below:{RHS}] {};
-\end{tikzpicture}
-\caption{Rule Example}
-\end{figure}
-
-\begin{figure}
-\label{fig:simple_rule_sans_k}
-\centering
-\begin{tikzpicture}[scale=2]
-  \node (n1) [vertex, label=below:{1}] at (0, 0) {};
-  \node (n2) [vertex, label=below:{2}] at (1, 0) {};
-  \path [edge] (n1) edge node {} (n2);
-  \node (l) [graph_small, fit={(n1) (n2)}, label=below:{LHS}] {};
-  
-  \node (n7) [vertex, label=below:{1}] at (2, 0) {};
-  \node (n8) [vertex, label=below:{2}] at (2.5, 0) {};
-  \node (n9) [vertex, label=below:{3}] at (3, 0) {};
-  \path [edge] (n7) edge node {} (n8);
-  \path [edge] (n8) edge node {} (n9);
-  \path [edge'] (n7) edge node {} (n9);
-  \node (r) [graph_small, fit={(n7) (n8) (n9)}, label=below:{RHS}] {};
-\end{tikzpicture}
-\caption{Rule Example without Interface Graph}
-\end{figure}
+\input{rule_example}
 
 %TODO ~READ, ~ADD: https://www.cs.york.ac.uk/plasma/wiki/index.php?title=GP_%28Graph_Programs%29 Lots of relevant papers and a couple of example programs i can steal and reference.
 \subsection{Graph Programs}
@@ -146,118 +102,14 @@ Figure \ref{fig:simple_rule} on page \pageref{fig:simple_rule} shows a simple ru
 The University of York has developed a graph programming language \emph{GP} \cite{gp1}, and has developed a new implementation \emph{"GP2"}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. The first GP was produced by Greg Manning. %TODO ~ADD, ~REFERENCE: Greg Manning Paper
 GP allows the application of \emph{programs} to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{host graph}. The resulting graph is known as the \emph{result graph}. A simple program could just be the continued application of a single rule.
 
-\begin{figure}
-\label{fig:simple_program}
-\centering
 %TODO ~ADD: Make the code portion of this picture truetype
 %TODO ~CHECK: Make sure this displays how it should (https://www.cs.york.ac.uk/plasma/wiki/images/5/5c/ExampleGraphProgramSimple_Dijkstra.png)
-\begin{tikzpicture}[scale=2]
-  \node (code) at (0, 3.5) {$main = InitTags!; Reduce$};
-  \node (rule_1) at (0, 2.8) {$InitTags(a,b,c,n : int) = $};
+\input{simple_program_example}
 
-  \node (n1) [vertex, label=below:{1}] at (0, 2.1) {$a_n$};
-  \node (n2) [vertex, label=below:{2}] at (1, 2.1) {c};
-  \path [edge] (n1) edge node[label=above:{b}] {} (n2);
-  \node (r1_l) [rule, fit={(n1) (n2)}] {};
-  
-  \node (n3) [vertex, label=below:{1}] at (2, 2.1) {$a_n$};
-  \node (n4) [vertex, label=below:{2}] at (3, 2.1) {$c_n+b$};
-  \path [edge] (n3) edge node[label=above:{b}] {} (n4);
-  \node (r1_r) [rule, fit={(n3) (n4)}] {};
-  
-  \draw[derivation] (r1_r) -> (r1_l); % dafuq is this backwards bullshit?
-  
-  \node (rule_2) at (0, 1.5) {$Reduce(a,b,c,n,i : int) = $};  
-  
-  \node (n5) [vertex, label=below:{1}] at (0, 0.8) {$a_n$};
-  \node (n6) [vertex, label=below:{2}] at (1, 0.8) {$c_i$};
-  \path [edge] (n5) edge node[label=above:{b}] {} (n6);
-  \node (r2_l) [rule, fit={(n5) (n6)}] {};
-  
-  \node (n7) [vertex, label=below:{1}] at (2, 0.8) {$a_n$};
-  \node (n8) [vertex, label=below:{2}] at (3, 0.8) {$c_n+b$};
-  \path [edge] (n7) edge node[label=above:{b}] {} (n8);
-  \node (r2_r) [rule, fit={(n7) (n8)}] {};
-  
-  \draw[derivation] (r2_r) -> (r2_l); % ~EDIT: Maybe use the deriviation tikz thing defined at the top.
-  \node (rule_2_condition) at (0, 0) {$where n+b < i$};  
+The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds the shortest path to each node, using Dijkstra's algorithm for pathfinding. Running it on the host graph will give the intermediary graphs shown in \ref{fig:simple_program_example} on \pageref{fig:simple_program_example}.
 
-\end{tikzpicture}
-\caption{Simple Dijkstra Program Example}
-\end{figure}
-
-The program \ref{fig:simple_program} on page \pageref{fig:simple_program} finds the shortest path to each node, using Dijkstra's algorithm for pathfinding. Running it on the host graph will give the intermediary graphs shown in \ref{fig:simple_program_example} on \pageref{fig:simple_program_example}. %TODO ~ADD: Maybe break down the application of one rule. Show what's happening. Maybe somewhere else?
-%TODO ~AMMEND: Look at the GRAT slides and use the shortest distance program there (which uses GP2 stuff, rather than GP1 stuff).
-
-\newgeometry{left=1cm,bottom=0.1cm}
-
-\begin{figure}
-\label{fig:simple_program_example}
-\centering
-%TODO ~CHECK: Make sure this displays how it should.
-%TODO ~ADD: Colour to illustrate changes?
-\begin{tikzpicture}[scale=2]
-  \node (n1_1) [vertex] at (0, 4) {$1\_0$};
-  \node (n1_2) [vertex] at (1, 4) {2};
-  \node (n1_3) [vertex] at (1, 5) {3};
-  \node (n1_4) [vertex] at (1, 6) {4};
-  \node (n1_5) [vertex] at (2, 4) {5};
-  \path [edge] (n1_1) edge node[label=above:{4}] {} (n1_2);
-  \path [edge] (n1_1) edge node[label=above:{6}] {} (n1_3);
-  \path [edge] (n1_2) edge node[label=above:{1}] {} (n1_3);
-  \path [edge] (n1_3) edge node[label=above:{2}] {} (n1_4);
-  \path [edge] (n1_2) edge node[label=above:{6}] {} (n1_5);
-  \path [edge] (n1_3) edge node[label=above:{4}] {} (n1_5);
-  \path [edge] (n1_4) edge node[label=above:{1}] {} (n1_5);
-  \node (g0) [rule, fit={(n1_1) (n1_2) (n1_3) (n1_4) (n1_5)}, label=below:{Host Graph}] {};
-  
-  \node (n2_1) [vertex] at (5, 4) {$1\_0$}; % probably have to change these coordinates.
-  \node (n2_2) [vertex] at (6, 4) {$2\_4$};
-  \node (n2_3) [vertex] at (6, 5) {3};
-  \node (n2_4) [vertex] at (6, 6) {4};
-  \node (n2_5) [vertex] at (7, 5) {5};
-  \path [edge] (n2_1) edge node[label=above:{4}] {} (n2_2);
-  \path [edge] (n2_1) edge node[label=above:{6}] {} (n2_3);
-  \path [edge] (n2_2) edge node[label=above:{1}] {} (n2_3);
-  \path [edge] (n2_3) edge node[label=above:{2}] {} (n2_4);
-  \path [edge] (n2_2) edge node[label=above:{6}] {} (n2_5);
-  \path [edge] (n2_3) edge node[label=above:{4}] {} (n2_5);
-  \path [edge] (n2_4) edge node[label=above:{1}] {} (n2_5);
-  \node (g1) [rule, fit={(n2_1) (n2_2) (n2_3) (n2_4) (n2_5)}, label=below:{Graph after one application of InitTags}] {};
-  
-  \node (n3_1) [vertex] at (0, 0) {$1\_0$}; % probably have to change these coordinates.
-  \node (n3_2) [vertex] at (1, 0) {$2\_4$};
-  \node (n3_3) [vertex] at (1, 1) {$3\_6$};
-  \node (n3_4) [vertex] at (1, 2) {$4\_8$};
-  \node (n3_5) [vertex] at (2, 1) {$5\_10$};
-  \path [edge] (n3_1) edge node[label=above:{4}] {} (n3_2);
-  \path [edge] (n3_1) edge node[label=above:{6}] {} (n3_3);
-  \path [edge] (n3_2) edge node[label=above:{1}] {} (n3_3);
-  \path [edge] (n3_3) edge node[label=above:{2}] {} (n3_4);
-  \path [edge] (n3_2) edge node[label=above:{6}] {} (n3_5);
-  \path [edge] (n3_3) edge node[label=above:{4}] {} (n3_5);
-  \path [edge] (n3_4) edge node[label=above:{1}] {} (n3_5);
-  \node (gx) [rule, fit={(n3_1) (n3_2) (n3_3) (n3_4) (n3_5)}, label=below:{Graph after all possible applications of InitTags}] {}; 
-  
-  \node (n4_1) [vertex] at (5, 0) {$1\_0$}; % probably have to change these coordinates.
-  \node (n4_2) [vertex] at (6, 0) {$2\_4$};
-  \node (n4_3) [vertex] at (6, 1) {$3\_5$};
-  \node (n4_4) [vertex] at (6, 2) {$4\_7$};
-  \node (n4_5) [vertex] at (7, 1) {$5\_8$};
-  \path [edge] (n4_1) edge node[label=above:{4}] {} (n4_2);
-  \path [edge] (n4_1) edge node[label=above:{6}] {} (n4_3);
-  \path [edge] (n4_2) edge node[label=above:{1}] {} (n4_3);
-  \path [edge] (n4_3) edge node[label=above:{2}] {} (n4_4);
-  \path [edge] (n4_2) edge node[label=above:{6}] {} (n4_5);
-  \path [edge] (n4_3) edge node[label=above:{4}] {} (n4_5);
-  \path [edge] (n4_4) edge node[label=above:{1}] {} (n4_5);
-  \node (gn) [rule, fit={(n4_1) (n4_2) (n4_3) (n4_4) (n4_5)}, label=below:{Graph after all possible applications of Reduce}] {}; 
-  
-\end{tikzpicture}
-\caption{Simple Dijkstra Program Example}
-\end{figure}
-
-\restoregeometry
+%TODO ~AMMEND: Look at the GRAT slides and use the shortest distance program there (which uses GP2 stuff, rather than GP1 stuff) http://www-module.cs.york.ac.uk/grat/Lectures/VII.pdf page 35
+\input{simple_program_execution}
 
 \section{GP2 Compiler}
 GP2 has a number of differences in the way in which it was implemented. As well as trying to address the issues of maintainability and usability, several features were added. %TODO ~AMMEND: differences to what? We're not comparing to GP1. Say what it does and why it was made.
@@ -265,7 +117,7 @@ Instead of using an abstract machine, the GP2 compiler generates C code directly
 
 GP2 no longer enforces non-detereministic execution \cite[p. 15]{gp2_ide}, and doesn't backtrack to reach all possible solutions. This was done to achieve a higher level of implementation efficiency \cite[p. 15]{chris_compiler}, but sacrifices completeness.
 
-The GP2 compiler parses the program and host graph files, and generates a C code representation of the program, which can then be run.
+The GP2 compiler parses the program and host graph files, and generates a C code representation of the program, which can then be run. % It generates an AST for the program, and creates files for each rule, with methods for matching, and methods for applying.
 
 %TODO ~ADD: more detailed explanation of how the GP2 compiler works.
 
@@ -321,7 +173,8 @@ It is critical to correctly identify the requirements for a system to be determi
 \section{High-Level Design}
 Writing maintainable code involves ensuring that the intent behind each procedure is as clear as possible to a programmer, familiar or unfamiliar with the system. This can be done with clear and useful naming of variables and functions, and with appropriate levels of comments documenting the intent behind the code.
 
-% There were 
+% I try to not have an impact on the existing code. No impact on performance. No impact on flow or structure.
+
  
 \chapter{Implementation}
 % ~3333 words (between Design *and* Implementation)
@@ -329,8 +182,12 @@ Writing maintainable code involves ensuring that the intent behind each procedur
 % 1. Find the parts of the code that generate different sizes of step.
 % 2. Implement breakpoints after each of them.
 
-\begin{lstlisting}[label=c_1, caption=Placeholder C Code]
-*foo = &bar;
+\begin{lstlisting}[label=code:breakpoint_1, caption=Pseudocode of breakpoints]
+rule_step_application
+if we_should_stop
+	finalise
+	exit
+endif
 \end{lstlisting}
 
 
@@ -343,6 +200,9 @@ Writing maintainable code involves ensuring that the intent behind each procedur
 \chapter{Conclusion}
 % ~1333 words
 \section{Future Work}
+
+% Have the Graphical Editor recognise the special labels and draw attention to changes.
+% Stepping backwards?
 
 \bibliography{references}
 
