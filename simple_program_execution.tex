@@ -1,0 +1,69 @@
+\newgeometry{left=1cm,bottom=0.1cm}
+
+\begin{figure}
+\label{fig:simple_program_example}
+\centering
+%TODO ~CHECK: Make sure this displays how it should.
+%TODO ~ADD: Colour to illustrate changes?
+\begin{tikzpicture}[scale=2]
+  \node (n1_1) [vertex] at (0, 4) {$1\_0$};
+  \node (n1_2) [vertex] at (1, 4) {2};
+  \node (n1_3) [vertex] at (1, 5) {3};
+  \node (n1_4) [vertex] at (1, 6) {4};
+  \node (n1_5) [vertex] at (2, 4) {5};
+  \path [edge] (n1_1) edge node[label=above:{4}] {} (n1_2);
+  \path [edge] (n1_1) edge node[label=above:{6}] {} (n1_3);
+  \path [edge] (n1_2) edge node[label=above:{1}] {} (n1_3);
+  \path [edge] (n1_3) edge node[label=above:{2}] {} (n1_4);
+  \path [edge] (n1_2) edge node[label=above:{6}] {} (n1_5);
+  \path [edge] (n1_3) edge node[label=above:{4}] {} (n1_5);
+  \path [edge] (n1_4) edge node[label=above:{1}] {} (n1_5);
+  \node (g0) [rule, fit={(n1_1) (n1_2) (n1_3) (n1_4) (n1_5)}, label=below:{Host Graph}] {};
+  
+  \node (n2_1) [vertex] at (5, 4) {$1\_0$}; % probably have to change these coordinates.
+  \node (n2_2) [vertex] at (6, 4) {$2\_4$};
+  \node (n2_3) [vertex] at (6, 5) {3};
+  \node (n2_4) [vertex] at (6, 6) {4};
+  \node (n2_5) [vertex] at (7, 5) {5};
+  \path [edge] (n2_1) edge node[label=above:{4}] {} (n2_2);
+  \path [edge] (n2_1) edge node[label=above:{6}] {} (n2_3);
+  \path [edge] (n2_2) edge node[label=above:{1}] {} (n2_3);
+  \path [edge] (n2_3) edge node[label=above:{2}] {} (n2_4);
+  \path [edge] (n2_2) edge node[label=above:{6}] {} (n2_5);
+  \path [edge] (n2_3) edge node[label=above:{4}] {} (n2_5);
+  \path [edge] (n2_4) edge node[label=above:{1}] {} (n2_5);
+  \node (g1) [rule, fit={(n2_1) (n2_2) (n2_3) (n2_4) (n2_5)}, label=below:{Graph after one application of InitTags}] {};
+  
+  \node (n3_1) [vertex] at (0, 0) {$1\_0$}; % probably have to change these coordinates.
+  \node (n3_2) [vertex] at (1, 0) {$2\_4$};
+  \node (n3_3) [vertex] at (1, 1) {$3\_6$};
+  \node (n3_4) [vertex] at (1, 2) {$4\_8$};
+  \node (n3_5) [vertex] at (2, 1) {$5\_10$};
+  \path [edge] (n3_1) edge node[label=above:{4}] {} (n3_2);
+  \path [edge] (n3_1) edge node[label=above:{6}] {} (n3_3);
+  \path [edge] (n3_2) edge node[label=above:{1}] {} (n3_3);
+  \path [edge] (n3_3) edge node[label=above:{2}] {} (n3_4);
+  \path [edge] (n3_2) edge node[label=above:{6}] {} (n3_5);
+  \path [edge] (n3_3) edge node[label=above:{4}] {} (n3_5);
+  \path [edge] (n3_4) edge node[label=above:{1}] {} (n3_5);
+  \node (gx) [rule, fit={(n3_1) (n3_2) (n3_3) (n3_4) (n3_5)}, label=below:{Graph after all possible applications of InitTags}] {}; 
+  
+  \node (n4_1) [vertex] at (5, 0) {$1\_0$}; % probably have to change these coordinates.
+  \node (n4_2) [vertex] at (6, 0) {$2\_4$};
+  \node (n4_3) [vertex] at (6, 1) {$3\_5$};
+  \node (n4_4) [vertex] at (6, 2) {$4\_7$};
+  \node (n4_5) [vertex] at (7, 1) {$5\_8$};
+  \path [edge] (n4_1) edge node[label=above:{4}] {} (n4_2);
+  \path [edge] (n4_1) edge node[label=above:{6}] {} (n4_3);
+  \path [edge] (n4_2) edge node[label=above:{1}] {} (n4_3);
+  \path [edge] (n4_3) edge node[label=above:{2}] {} (n4_4);
+  \path [edge] (n4_2) edge node[label=above:{6}] {} (n4_5);
+  \path [edge] (n4_3) edge node[label=above:{4}] {} (n4_5);
+  \path [edge] (n4_4) edge node[label=above:{1}] {} (n4_5);
+  \node (gn) [rule, fit={(n4_1) (n4_2) (n4_3) (n4_4) (n4_5)}, label=below:{Graph after all possible applications of Reduce}] {}; 
+  
+\end{tikzpicture}
+\caption{Simple Dijkstra Program Example}
+\end{figure}
+
+\restoregeometry
