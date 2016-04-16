@@ -150,17 +150,19 @@ Breakpoints allow for the stopping or pausing of a program part of the way throu
 % END OF LITERATURE REVIEW
 
 \chapter{Design}
-\section{Requirement Identification}
+\section{Users \& Requirements}
 % ~2000 words (Problem analysis)
 % ~3333 words (between Design *and* Implementation)
 
-\subsection{Users}
-The users of GP2 as it stands are predominantly students at the University of York, as well as some researchers in the field of graph transformations. These students use it to get a hands-on appreciation of both graph transformation generally, and GP2 specifically.
+The users of GP2 as it stands are predominantly students and staff at the University of York, and researchers in the field of graph transformations. The students use it to get a hands-on appreciation of both graph transformation generally, and GP2 specifically.
 
-Any tracing will need to not have negative impacts on the currently existing system. Ideally, as little effect on efficiency and performace as possible should be made to the compiler, and to the generated code running the Graph Program. Also, any changes made to the editor should serve only to enhance the user's understanding of the underlying process, and should be avoidable if they so choose.
+%TODO ~ADD: What users care about. Students want usablility. Also no performance impact. Developers want maintainability and integratability.
 
-\subsection{Requirements}
-It is critical to correctly identify the requirements for a system to be determined succesful. It also means that throughout the design process, there are key features to be kept in mind. 
+Any tracing will need to not have any negative impacts on the currently existing system. Ideally, as little effect on efficiency and performace as possible should be made to the compiler, and to the generated code running the Graph Program. The new system should also be completely backwards compatible. That is, the tracing should be optional, with the current implementation for running a given graph program on a host graph still performing that action.
+
+Also, any changes made to the editor should serve only to enhance the user's understanding of the underlying process, and should be avoidable if they so choose.
+
+It is critical to correctly identify the requirements for a system to be determined succesful to allow for any evaluation. It also means that throughout the design process, there are key features to be kept in mind.
 \begin{enumerate}
 	\item A program must be able to be stepped through, that is, a portion of the program (step) must be able to be run on either the host graph, or the resultant graph of a previous step's execution.
 	\item These steps would ideally be of specifiable sizes.
@@ -168,13 +170,36 @@ It is critical to correctly identify the requirements for a system to be determi
 	\item These steps would ideally be displayed in such a way to highlight themselves.
 \end{enumerate}
 
-
-
 \section{High-Level Design}
 Writing maintainable code involves ensuring that the intent behind each procedure is as clear as possible to a programmer, familiar or unfamiliar with the system. This can be done with clear and useful naming of variables and functions, and with appropriate levels of comments documenting the intent behind the code.
 
 % I try to not have an impact on the existing code. No impact on performance. No impact on flow or structure.
 
+%TODO ~ADD: ideas i was gonna do, but didn't. alternative implementations
+% I was gonna have the compiler create a chunk of runnable code. But that means having the compiler run for each step. 
+% Or maybe the compiler could create chunks of runnable code, sub-programs. But this would slow down the execution as there would be more file I/O calls. And causes more distruption to the running of a program if the entire program is being run.
+
+% So let's be sensible and implement breakpoints after every command, and sort the breakpoints into sizes, which correspond to step sizes.
+
+% I use labels to identify which nodes and edges have been added, or matched.
+%TODO ~CHECK: That this is a valid use of labels. Check that there's no "has_empty_label" check that would be broken by my "highlighting".
+
+\section{Design in more detail} %TODO ~AMMEND: This title to something a bit catchier and more informative.
+
+% Have to know when to stop.
+% Have to use the previously outputted graph. But only if we've stepped through.
+% Have to know when to start, if we've previously only stepped through a bit.
+% Add a very small file that holds the number of where to start. Its existence mean to use the previously outputted graph.
+% Adds a small brief File I/O cost at the beginning, but that's when the graph is loaded anyway, and it's really minor. Like 3 lines? (one for current step, one for highlighted nodes, one for highlighted edges)
+% Factor out the finalisation, as it can happen at other parts of the code now.
+% Have matching without executing.
+
+% Have to highlight changes somehow.
+	% Could use a custom mark. But that means that it can't have a mark, or I'd have to change the language to allow for multiple marks.
+	% Could use a file with highlighted nodes/edges, but that seems to disrupt the existing pipeline. Editor would need to load an additional file, jsut for the highlights.
+	% Could have special designated labels for changes, but that may or may not change the behaviours of rules. And a record would still need to be made to remove them again.
+	
+% Choose the 2nd one. I/O still only needs to be done once at the beginning and once at the end, and only if steps are happening.
  
 \chapter{Implementation}
 % ~3333 words (between Design *and* Implementation)
@@ -191,8 +216,18 @@ endif
 \end{lstlisting}
 
 
+
+
 \chapter{Evaluation}
 % ~3333 words
+
+% Relate back to requirements
+% Talk about what I got done.
+	% Stepping through
+	% Various size steps
+	% 
+% Talk about what I didn't get done.
+
 \section{Performance}
 %TODO ~ADD: Performance Benchmarks
 
