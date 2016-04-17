@@ -23,6 +23,7 @@
 \tikzstyle{edge} = [->, bend left]
 \tikzstyle{edge'} = [->, bend right]
 \tikzstyle{vertex} = [circle, minimum width=0.5cm, text centered, draw=black]
+\tikzstyle{mark_grey} = [fill=grey]
 \tikzstyle{graph_small} = [rectangle, draw=black, inner sep=0.5cm]
 \tikzstyle{graph} = [rectangle, draw=black, inner sep=1cm]
 \tikzstyle{rule} = [rectangle, inner sep=1cm]
@@ -31,7 +32,7 @@
 % ---------------
 % Listings Setup
 \usepackage{listings}
-\renewcommand{\lstlistingname}{C Code}
+\renewcommand{\lstlistingname}{Program Code}
 
 \author{Huw Taylor}
 \title{Tracing GP2 Execution} %TODO ~AMMEND: is 'Execution' needed? Maybe just Tracing GP2?
@@ -60,17 +61,17 @@ I would like to thank Christopher Bak for his support throughout the project. Hi
 \chapter{Introduction}
 % ~1333 words
 \section{Motivation}
-GP is a graph programming language. It was developed to provide a language that is expressive enough to solve complex graph problems, while also having a simple enough syntax to allow for formal reasoning. Graphs and graph transformations have previously implemented in low-level languages, like C. This meant that it was more difficult to understand, verify, and implement\cite{gp_lang}. GP at its core has four commands that nevertheless allows every computable function on graphs to be implemented \cite{gp1}. These commands are a single application of a rule, sequential composition, loops, and branching. Loops are implemented in a run-for-as-long-as-possible style.
+GP is a graph programming language. It was developed to provide a language that is expressive enough to solve complex graph problems, while also having a simple enough syntax to allow for formal reasoning. Graphs and graph transformations have previously implemented in low-level languages, like C. This meant that it was more difficult to understand, verify, and implement \cite{gp_lang}. GP at its core has four commands that nevertheless allows every computable function on graphs to be implemented \cite{gp1}. These commands are a single application of a rule, sequential composition, loops, and branching. Loops are implemented in a run-for-as-long-as-possible style.
 %TODO ~ADD: more stuff about GP (page 18 on https://www.cs.york.ac.uk/ftpdir/reports/2007/YCST/15/YCST-2007-15.pdf (gp_lang) and page 1 on https://www.cs.york.ac.uk/plasma/publications/pdf/Plump.CAI.09.pdf (gp1))
 
-GP2, the second iteration of GP, builds upon the first. It adds the marking of nodes with a colour, or a special 'any' colour; additional conditions that can be checked against in a rule's schema, including the indegree and outdegree of an edge, and whether there exists an edge between two nodes; and an additional branching mechanism: a try-then-else. In try-then-else and if-then-else branching, the condition is a set of rules schemata, and often alters the graph. If-then-else branching uses the graph before the 'if' condition is evaluated, and any changes are made, in the 'then' branch. In contrast, the try-then-else uses the \emph{result} of the 'try' condition in the 'then' branch. In both, the 'else' branch uses the graph before the condition is checked against \cite{gp2_design}.
+GP2, the second iteration of GP, builds upon the first. It adds the marking of nodes with a colour, or a special 'any' colour; additional conditions that can be checked against in a rule's schema, including the in-degree and out-degree of an edge, and whether there exists an edge between two nodes; and an additional branching mechanism: a try-then-else. In try-then-else and if-then-else branching, the condition is a set of rules schemata, and often alters the graph. If-then-else branching uses the graph before the 'if' condition is evaluated, and any changes are made, in the 'then' branch. In contrast, the try-then-else uses the \emph{result} of the 'try' condition in the 'then' branch. In both, the 'else' branch uses the graph before the condition is checked against \cite{gp2_design}.
 %TODO ~ADD: what GP2 adds (page 1 on https://www.cs.york.ac.uk/plasma/publications/pdf/Plump.WRS.11.pdf (gp2_design))
 
 The University of York has produced a compiler for GP2. %TODO ~MENTION: a bit about the compiler. Doesn't have non-determinism properly, or rather doesn't allow for full exploration of the solution space.
 
-The University of York has produced a graphical editor for creating graphs and graph programs. The editor depends on the compiler to execute the program on the host graph, thereby producing the resultant graph. It displays the graphs %TODO ~ADD: say more about the editor. The horrible horrible editor.
+The University of York has produced a graphical editor for creating graphs and graph programs. The editor depends on the compiler to execute the program on the host graph, thereby producing the resultant graph. It displays the graphs, and has a graphical user interface for creating graphs, rules and programs. %TODO ~ADD: say more about the editor. The horrible horrible editor.
 
-The aim of this project is to show the execution of the program. As it is, the entire program is run, and the resulting graph is saved. This project aims to show the intermediate steps of the program. This will allow the correctness of the program to be ensured, and also so that people using these tools, who may not have a complete understanding of how graph programs work, can see the process with a finer granularity.
+The aim of this project is to show the execution of the program. As it is, the compiler generates code to run the entire program on the host graph, and that code is then run, and the resulting graph is saved. If the graphical editor is being used, the host graph and program can be loaded or created, and, upon running the program, the resultant graph will be displayed to the user. This project aims to show the intermediate steps of the program. This will allow the correctness of the program to be ensured, and also so that people using these tools, who may not have a complete understanding of how graph programs work in general, or who aren't sure about their specific program's execution, can see the process with a finer granularity.
 
 %TODO ~ADD: The benefits of being able to step through programs. 
 
@@ -204,19 +205,53 @@ Writing maintainable code involves ensuring that the intent behind each procedur
 \chapter{Implementation}
 % ~3333 words (between Design *and* Implementation)
 
+\section{Limiting the steps} %TODO ~AMMEND: change this title.
+
+% The compiler currently generates code. It has methods for generating rule steps, and method for generating larger structures. I will add code at the end of these methods to see if the number of steps specified has been reached.
+
+% A simple overview of the implementation is this:
+
 % 1. Find the parts of the code that generate different sizes of step.
 % 2. Implement breakpoints after each of them.
 
 \begin{lstlisting}[label=code:breakpoint_1, caption=Pseudocode of breakpoints]
 rule_step_application
 if we_should_stop
-	finalise
-	exit
+    exit
 endif
+rule_step_application
+if we_should_stop
+    exit
+endif
+...
 \end{lstlisting}
 
+% This will correctly end the program after X steps. However, running the program again will run the first steps again. So we need to start where we left off. So let's have the finalise code print the current_step to a file.
+% The output_directory is given by the generating code and will the path to the same output directory where the resultant graph is stored.
 
+\begin{lstlisting}[label=code:save_current_step, caption=Finalise step, language=C]
+void finalise(FILE *output_file)
+{
+   FILE *fp = fopen("output_directory/step.trace", "w");
+   if (fp != NULL)
+   {
+      fprintf(fp, "%d\n", current_step);
+   }
+   fclose(fp);
+   printGraph(host, output_file);
+   printf("Output graph saved to file gp2.output\n");
+   garbageCollect();
+   fclose(output_file);
+}
+\end{lstlisting}
 
+% Previously this was at the end of the main method, and didn't have the first 6 lines, but I refactored it into its own method, added the saving of the current step. Finalise can be called not just at the end of the program now (see previous listing).
+
+\section{Continuing} %TODO ~AMMEND: change this title.
+
+% We need to check to see if we are indeed "continuing". If not, we don't change anything about the running of the program.
+% However, if we are, then we need to load in the previous output as the new input, and load the current_step.
+%TODO ~ADD: some code to show this.
 
 \chapter{Evaluation}
 % ~3333 words
