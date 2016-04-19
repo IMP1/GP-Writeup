@@ -161,6 +161,8 @@ The GP2 graphical editor for creating graphs and graph programs is currently und
 
 %TODO ~ADD: a screenshot
 
+%TODO ~MENTION: that the editor has added positions to nodes in the lexer, and the parser ignores them.
+
 \section{Program Tracing}
 There are several techniques available to software developers when attempting to track down the locations of errors they've made. This process is called debugging, and many of the techniques involve outputting information about the program and its state throughout its execution. Other techniques involve dumping the last-stable memory at the point of a program crashing, which will then be analysed. 
 
@@ -219,13 +221,18 @@ An alternative approach is to keep the compiler as it is, but to have it also ge
 % In the case where the user is stepping through, it obvs takes time to get up to the current step, but it's not actually doing any of those rule applications, so it's just doing for i = 1 to n (i ++), which obvs doesn't take long.
 
 % With this approach, as with the previous approach, we need some way of keeping track of which step we're at.
-% We can use the output graph from last time as the new input graph, and we can have a really small file which just holds a number.
+% We can use the output graph from last time as the new input graph, and we can have a really small file which just holds a number (and a lookup table - see below).
+%TODO ~MENTION: !!! IMPORTANT !!! Since GP2 is still non-deterministic, we need a way to make sure we get to the current step. Counting is not enough, since we might take a different path the second time around. So we need to record any decisions we make (if conditions, try conditions, rule-set choices) and create a lookup table, and then when doing the process of getting to the current step, use the lookup table for any choices. !!! IMPORTANT !!!
+
 
 % I try to not have an impact on the existing code. No impact on performance. No impact on flow or structure.
 
 % I use labels to identify which nodes and edges have been added, or matched.
-%TODO ~CHECK: That this is a valid use of labels. Check that there's no "has_empty_label" check that would be broken by my "highlighting".
-% Suggest alternative, like having the changed nodes/edges also in a file, that the editor would read? But this requires bigger changes to the editor.
+%TODO ~CHECK: That this is a valid use of labels. Check that there's no "has_empty_label" check that would be broken by my "highlighting". THIS IS NOT A VALID USE OF LABELS. YOU CAN CHECK FOR EMPTY LABELS AND THIS WOULD BREAK THAT FUNCTIONALITY. SUGGEST IT BUT MENTION IT WON'T WORK.
+% Suggest alternative, like having the changed nodes/edges also in a file, that the editor would read? But this requires bigger changes to the editor, but there isn't an alternative.
+%TODO also suggest that maybe I could do similar to this sort of thing (https://github.com/UoYCS-plasma/GP2/commit/ebf07f73593cc19b785e504b88a5b9a270631fd1) - whatever is happening here - but for highlighting changes. Maybe I could mention this in future work. Maybe say I did it?
+% This is the parser ignoring editor layout stuff: https://github.com/UoYCS-plasma/GP2/blob/ebf07f73593cc19b785e504b88a5b9a270631fd1/Compiler/src/gpParser.y#L388
+% I could say I did something similar with respects to highlighting.
 
 \section{Design in more detail} %TODO ~AMMEND: This title to something a bit catchier and more informative.
 
