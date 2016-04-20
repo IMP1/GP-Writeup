@@ -10,10 +10,12 @@
 %   ~IDEA      : Suggestion for later in the project.
 
 \documentclass{UoYCSproject}
-\usepackage{geometry}
+\usepackage{graphicx} % For images
+\graphicspath{ {img/} }
 
 % -----------
 % Tikz Setup 
+\usepackage{geometry}
 \usepackage{tikz}
 \usetikzlibrary{ matrix,      % For easy node positioning
                  fit,         % For easily fitting nodes inside another one
@@ -159,12 +161,10 @@ The GP2 graphical editor for creating graphs and graph programs is currently und
 % It has a tab for creating rules.
 % It has a tab for creating graphs.
 % It has a tab for running programs on graphs.
-
-% The run tab (not shown) just has a program file and a host graph file.
-
 %TODO ~CHECK: the above statements.
 
 %TODO ~ADD: a screenshot
+\includegraphics[width=\textwidth]{editor_graph}
 
 %TODO ~MENTION: that the editor has added positions to nodes in the lexer, and the parser ignores them.
 
@@ -214,8 +214,6 @@ It is critical to correctly identify the requirements for a system to be determi
 	\item 
 \end{enumerate}
 
-%TODO ~ADD: What about stepping backwards? I guess for performance we shouldn't include this, because it would either involve more backtracking, or would involve running the program again up to the current_step - 1 (or something).
-
 \section{High-Level Design}
 Writing maintainable code involves ensuring that the intent behind each procedure is as clear as possible to a programmer, familiar or unfamiliar with the system. This can be done with clear and useful naming of variables and functions, and with appropriate levels of comments documenting the intent behind the code.
 
@@ -224,8 +222,7 @@ However, this presents the problem that the compiler doesn't know the execution 
 
 This design also radically changes the structure of the existing compiler, and changes the flow of executing a graph program. For maintainability, the decision was made against changing the compiler in such a drastic a manner.
 
-An alternative approach is to keep the compiler as it is, but to have it also generate breakpoints in the program code. These breakpoints would allow the program to end after a certain number of steps. Following this, program also needs to be able to start from a step other than the beginning, so a user can step through more than once consecutively. This simpler design has less impact on the flow and structure of the compiler as it is, and should have very little impact on the runtime performance of the graph program if the user is executing the entire program. This is an improvement over the previous design, in the case where the user is not stepping through it at all.
-% In the case where the user is stepping through, it obvs takes time to get up to the current step, but it's not actually doing any of those rule applications, so it's just doing for i = 1 to n (i ++), which obvs doesn't take long.
+An alternative approach is to keep the compiler as it is, but to have it also generate breakpoints in the program code. These breakpoints would allow the program to end after a certain number of steps. Following this, program also needs to be able to start from a step other than the beginning, so a user can step through more than once consecutively. This simpler design has less impact on the flow and structure of the compiler as it is, and should have very little impact on the runtime performance of the graph program if the user is executing the entire program. This is an improvement over the previous design in the case where the user is not stepping through it at all. In the case where the user \emph{is} stepping through, the time taken to get the program state ready to perform the next step(s) is simply the time for a counter to reach the number n. It doesn't need to perform any of the rule matches or applications, it's just counting up to the current step. This approach obviously needs some way of keeping track of the last executed step, but it also has another problem to solve. Since GP is still non-deterministic, a method is needed to make sure the current step is correctly obtained. This method will need to ensure that each of the decisions chosen from rule sets and if- and try-statement branches is the same for each subsequent step through the program, until the program has terminated. 
 
 % With this approach, as with the previous approach, we need some way of keeping track of which step we're at.
 % We can use the output graph from last time as the new input graph, and we can have a really small file which just holds a number (and a lookup table - see below).
@@ -323,9 +320,6 @@ void finalise(FILE *output_file)
 
 \section{Performance}
 %TODO ~ADD: Performance Benchmarks
-
-% time elapsed was 0.002972 for 2 color on 10 grid
-% time elapsed was 0.002632 for shortest path
 
 % Chris's paper ~page 73 for example of benchmarking write-up
 
