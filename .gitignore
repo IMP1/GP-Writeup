@@ -1,9 +1,5 @@
-*.pdf
-project.aux
-project.lof
-project.out
-project.toc
-project.bbl
-project.blg
-*.log
-*.gz
+papers/*
+img/*
+
+project.*
+!project.tex
