@@ -42,8 +42,8 @@
 \supervisor{Dr. Detlef Plump}
 \MEng
 %TODO ~CHECK: The word/page counts are up to date.
-\wordcount{3866}
-\pagecount{15}
+\wordcount{4521}
+\pagecount{16}
 % ~16000 words (55 pages) total
 \abstract{
 % ~66 words
@@ -70,11 +70,11 @@ GP is a graph programming language. It was developed to provide a language that 
 
 GP2, the second iteration of GP, builds upon the first. It adds a few new features, and some syntactic sugar \cite{gp2_design}. Also, the design of GP2 was slightly modified to enable a higher level of performance. A compiler was produced by the University of York for GP2. The compiler generates C code from a high level representation of a graph program in GP2. This has the advantage of being able to reason about graphs and graph programming using GP2, but allows for the low-level, high-performance that C allows for.
 
-The University of York has also produced a graphical editor for creating graphs and graph programs. The editor depends on the compiler to execute the program on the host graph, thereby producing the resultant graph. It displays the graphs, and has a graphical user interface for creating graphs, rules and programs.
+The University of York has also produced a graphical editor for creating graphs and graph programs. The editor depends on the compiler to execute a given graph program on the host graph, thereby producing the resultant graph. It displays the graphs, and has a graphical user interface for creating graphs, rules and graph programs.
 
-Currently, the compiler generates the code to run the entire program on the given host graph. It generates code for each rule and a main program file which makes use of the rules' code. After compilation, the C code implementation of the graph program can be run on the graph, and the resultant graph is saved in the given output directory.
+Currently, the compiler generates the code to run the entire graph program on the given host graph. It generates code for each rule and a main graph program file which makes use of the rules' code. After compilation, the C code implementation of the graph program can be run on the graph, and the resultant graph is saved in the given output directory.
 
-If the graphical editor is being used, the user can graphically create the host graph, and the rules for the program within it, and can run their program on their host graph, and the editor will show them the resultant graph.
+If the graphical editor is being used, the user can graphically create the host graph, and the rules for the graph program within it, and can run their program on their host graph, and the editor will show them the resultant graph.
 
 The aim of this project is to show the execution of the program, that is, the intermediate steps that result in the final output graph. This will allow users to see the process, which enables the correctness of the program to be ensured. It will also give people using these tools, who may not have a complete understanding of how graph programs work in general, or who aren't sure about their specific program's execution in particular, the opportunity to see the process with a finer granularity.
 
@@ -211,52 +211,57 @@ It is critical to correctly identify the requirements for a system to be determi
 	\item These steps would ideally be of specifiable sizes.
 	\item These steps must be able to be displayed graphically in the GP2 Editor.
 	\item These steps would ideally be displayed in such a way to highlight any changes made in a step.
-	\item 
 \end{enumerate}
 
 \section{High-Level Design}
 Writing maintainable code involves ensuring that the intent behind each procedure is as clear as possible to a programmer, familiar or unfamiliar with the system. This can be done with clear and useful naming of variables and functions, and with appropriate levels of comments documenting the intent behind the code.
 
-A possible design that meets the aims of this project would be to have the compiler generate "chunks" of the program. This would have shifted most of the extra processing into the compiler, and so would have had minimal impact on the running of the graph program. %TODO ~ADD: some other benefit of this? Chunks for steps allows for modularsation or isolation of certain steps?
+A possible design that meets the first aims of this project would be to have the compiler generate "chunks" of the program. This would have shifted most of the extra processing into the compiler, and so would have had minimal impact on the running of the graph program. %TODO ~ADD: some other benefit of this? Chunks for steps allows for modularsation or isolation of certain steps?
 However, this presents the problem that the compiler doesn't know the execution of the program at compile time, and so the sizes of these "chunks" cannot be determined. This means that the smallest size of chunk would have to be generated, and the runtime would determine how many of these correspond to a larger size of step. This also has the problem that the runtime needs to keep track of the current iteration of a loop, which is because the compiler doesn't know how many iterations of a loop will be run at compile time, so it cannot generate the program as a series of steps as it will be run. While this process doesn't have a significant impact on performance if the user is just performing a single step at a time, if the entire program is run, which is the default behaviour, there is a significant performance hit. If a large number of steps is needed to be run, then that requires the program to read in each chunk of code and execute it, for every step. Clever implementations could cache the loaded data, but this sort of file I/O is less costly if just performed once at the beginning.
 
 This design also radically changes the structure of the existing compiler, and changes the flow of executing a graph program. For maintainability, the decision was made against changing the compiler in such a drastic a manner.
 
-An alternative approach is to keep the compiler as it is, but to have it also generate breakpoints in the program code. These breakpoints would allow the program to end after a certain number of steps. Following this, program also needs to be able to start from a step other than the beginning, so a user can step through more than once consecutively. This simpler design has less impact on the flow and structure of the compiler as it is, and should have very little impact on the runtime performance of the graph program if the user is executing the entire program. This is an improvement over the previous design in the case where the user is not stepping through it at all. In the case where the user \emph{is} stepping through, the time taken to get the program state ready to perform the next step(s) is simply the time for a counter to reach the number n. It doesn't need to perform any of the rule matches or applications, it's just counting up to the current step. This approach obviously needs some way of keeping track of the last executed step, but it also has another problem to solve. Since GP is still non-deterministic, a method is needed to make sure the current step is correctly obtained. This method will need to ensure that each of the decisions chosen from rule sets and if- and try-statement branches is the same for each subsequent step through the program, until the program has terminated. 
+An alternative approach is to keep the compiler as it is, but to have it also generate breakpoints in the program code. These breakpoints would allow the program to end after a certain number of steps. Following this, program also needs to be able to start from a step other than the beginning so a user can step through more than once consecutively. This simpler design has less impact on the flow and structure of the compiler as it is, and should have very little impact on the runtime performance of the graph program if the user is executing the entire program. This is an improvement over the previous design in the case where the user is not stepping through the program at all. In the case where the user \emph{is} stepping through, the time taken to get the program state ready to perform the next step(s) is simply the time for a counter to reach the number n, where n is the last executed step. It doesn't need to perform any of the rule matches or applications, it's just traversing the runtime code's structure counting up to the current step. 
 
-% With this approach, as with the previous approach, we need some way of keeping track of which step we're at.
-% We can use the output graph from last time as the new input graph, and we can have a really small file which just holds a number (and a lookup table - see below).
-%TODO ~MENTION: !!! IMPORTANT !!! Since GP2 is still non-deterministic, we need a way to make sure we get to the current step. Counting is not enough, since we might take a different path the second time around. So we need to record any decisions we make (if conditions, try conditions, rule-set choices) and create a lookup table, and then when doing the process of getting to the current step, use the lookup table for any choices. !!! IMPORTANT !!!
+This approach obviously needs some way of keeping track of the last executed step, but it also has another problem to solve. Since GP is still non-deterministic, a method is needed to make sure the current step is correctly obtained. This method will need to ensure that each of the decisions chosen from rule sets and if- and try-statement branches is the same for each subsequent step through the program, until the program has terminated. This method could employ a lookup table of the decisions. This lookup table, along with the last executed step, could be stored in a small file alongside the output graph. Loading and saving to this file should have very little impact, and creating the lookup table when executing the graph program is also a simple process.
 
+Since the smallest steps of any relevance to the user are the matching and applications of a rule, this could be the smallest size of step. However, since only the match step of the last rule being run matters at all to the user for the tracing, the decision to have a single rule application as the smallest step makes more sense. This doesn't solve the issue of the user being able to stop between a match and a step, but a simple flag to stop after a match, and before an application, of a rule would be a simple solution.
 
-% I try to not have an impact on the existing code. No impact on performance. No impact on flow or structure.
+The last problem to solve is that of illustrating what changes have happened. It's possible a user is able to visually see new nodes and edges after a rule application, but in a large graph this may be more difficult. 
 
-% I use labels to identify which nodes and edges have been added, or matched.
-%TODO ~CHECK: That this is a valid use of labels. Check that there's no "has_empty_label" check that would be broken by my "highlighting". THIS IS NOT A VALID USE OF LABELS. YOU CAN CHECK FOR EMPTY LABELS AND THIS WOULD BREAK THAT FUNCTIONALITY. SUGGEST IT BUT MENTION IT WON'T WORK.
-% Suggest alternative, like having the changed nodes/edges also in a file, that the editor would read? But this requires bigger changes to the editor, but there isn't an alternative.
-%TODO also suggest that maybe I could do similar to this sort of thing (https://github.com/UoYCS-plasma/GP2/commit/ebf07f73593cc19b785e504b88a5b9a270631fd1) - whatever is happening here - but for highlighting changes. Maybe I could mention this in future work. Maybe say I did it?
-% This is the parser ignoring editor layout stuff: https://github.com/UoYCS-plasma/GP2/blob/ebf07f73593cc19b785e504b88a5b9a270631fd1/Compiler/src/gpParser.y#L388
-% I could say I did something similar with respects to highlighting.
+New nodes and edges are not the only changes that are to be "highlighted". Matched nodes and edges are also to be shown to the user, as well as relabelled nodes and edges. Removals cannot be shown as there is nothing to show, and nothing to attach a "highlight" to.
 
-\section{Design in more detail} %TODO ~AMMEND: This title to something a bit catchier and more informative.
+It's possible to have another file that would list each node and edge that has been added (or matched). This has the advantage of simplicity, but whereas the file containing the current step and branches is only accessed by the runtime code, any file containing the changes made in the last step would be accessed by the graphical editor, and potentially other applications further down the line. Therefore it seems more acceptable to have a more formal way to have this information be accessed. The idea of adding a specific label string for certain changes to a node's label was considered, but this would break functionality of GP2, as any conditions checking for a node's label to be empty would be invalidated by the existance of this 'change label'.
 
-% Have to know when to stop.
-% Have to use the previously outputted graph. But only if we've stepped through.
-% Have to know when to start, if we've previously only stepped through a bit.
-% Add a very small file that holds the number of where to start. Its existence mean to use the previously outputted graph.
-% Adds a small brief File I/O cost at the beginning, but that's when the graph is loaded anyway, and it's really minor. Like 3 lines? (one for current step, one for highlighted nodes, one for highlighted edges)
+The current implementation of the GP2 Editor adds positions for nodes to the GP2 lexer. They are used by the editor to maintain structure of a graph and keep nodes in the same place where possible. They are used soley by the editor and the parser is instructed to ignore them. Since any "highlight" of a node is a similar type of information, that is, it pertains to not to the mathematical structure of the graph, but is useful in displaying it, it seems appropriate to use this approach for storing the changes of nodes.
+
+\section{Design Breakdown}
+
+%TODO ~ADD, ~MENTION: How to find out what nodes have been added/matched.
+%TODO ~MENTION: Using the output graph as the new input graph.
+%TODO ~ADD: More details about steps of different sizes. Maybe it'd just be instead of `if current_step == this { finalise; }` it would be something more like `if current_step == this && step_size == this { finalise; }`?
+% With step_size being an enum, that's read in from the arguments (args can either be ints or strings, but are converted to the enum when they're read in).
+
 % Factor out the finalisation, as it can happen at other parts of the code now.
-% Have matching without executing.
 
-% Have to highlight changes somehow.
-	% Could use a custom mark. But that means that it can't have a mark, or I'd have to change the language to allow for multiple marks.
-	% Could use a file with highlighted nodes/edges, but that seems to disrupt the existing pipeline. Editor would need to load an additional file, jsut for the highlights.
-	% Could have special designated labels for changes, but that may or may not change the behaviours of rules. And a record would still need to be made to remove them again.
-	
-% Choose the 2nd one. I/O still only needs to be done once at the beginning and once at the end, and only if steps are happening.
+% There are certain additional things we need to know at the beginning of the running of a graph program on a host graph:
+	% Have to know when to stop.
+	% Have to use the previously outputted graph. But only if we've stepped through.
+	% Have to know when to start, if we've previously only stepped through a bit.
+% Using these, we will do the following:
+	% Add a very small file that holds the number of where to start. Its existence mean to use the previously outputted graph.
+	% Adds a small brief File I/O cost at the beginning, but that's when the graph is loaded anyway, and it's really minor. Like 3 lines? (one for current step, one for highlighted nodes, one for highlighted edges)
+	% Have matching without executing.
+
  
 \chapter{Implementation}
 % ~3333 words (between Design *and* Implementation)
+
+% User has to (optionally) give certain parameters. By default, the compiler does it's normal thing.
+% If a step size is specified, only that much is run.
+
+% Give the GP2-run some usage string, and show that.
+% 
 
 \section{Limiting the steps} %TODO ~AMMEND: change this title.
 
@@ -278,6 +283,8 @@ if we_should_stop
 endif
 ...
 \end{lstlisting}
+
+% This needs the addition of stopping *in* the rule_step_application (between match and apply)
 
 % This will correctly end the program after X steps. However, running the program again will run the first steps again. So we need to start where we left off. So let's have the finalise code print the current_step to a file.
 % The output_directory is given by the generating code and will the path to the same output directory where the resultant graph is stored.
@@ -302,14 +309,19 @@ void finalise(FILE *output_file)
 
 \section{Continuing} %TODO ~AMMEND: change this title.
 
-% We need to check to see if we are indeed "continuing". If not, we don't change anything about the running of the program.
-% However, if we are, then we need to load in the previous output as the new input, and load the current_step.
+% We need to check to see if we are indeed "continuing". If not, we don't change anything about the running of the program. This is because we are either, starting again with a specified number of steps, which is addressed in Limiting the Steps, or we're running the program without tracing.
+% However, if we *are* continuing, then we need to load in the previous output as the new input, and load the current_step.
 %TODO ~ADD: some code to show this.
 
 %TODO ~MENTION: the problem of not having the rule datatype at runtime, so we can't as easily find the nodes and edges that are new in the RHS of the rule.
 
-\chapter{Evaluation}
+\chapter{Conclusion}
+% ~1333 words
+
+\section{Evaluation}
 % ~3333 words
+
+% Check out p152 in Chris's thesis for an evaluation
 
 % Relate back to requirements
 % Talk about what I got done.
@@ -318,17 +330,29 @@ void finalise(FILE *output_file)
 	% 
 % Talk about what I didn't get done.
 
-\section{Performance}
-%TODO ~ADD: Performance Benchmarks
+% Stuff I can Evaluate
+% Functionality
+	% Ticks all the boxes.
+% Performance
+	% Is totally fine. Has its own section..
+% Maintainability
+	% Is good. I didn't distrupt things too much. I was highly coupled with existing implemetations though.
+% Usability?
+
+\subsection{Performance}
 
 % Chris's paper ~page 73 for example of benchmarking write-up
+% These are just general timings. Use them to make shit up
+	% time elapsed was 0.002972 for 2 color on 10 grid
+	% time elapsed was 0.002632 for shortest path
 
-\chapter{Conclusion}
-% ~1333 words
 \section{Future Work}
 
-% Have the Graphical Editor recognise the special labels and draw attention to changes.
-% Stepping backwards?
+% Having the Graphical Editor recognise the special labels and draw attention to changes is the obvious immediate next thing to do.
+% Stepping backwards? Would be a challenge.
+% Visualisations of graph programs?
+	% 
+%TODO ~ADD: more future work ideas.
 
 \bibliography{references}
 
