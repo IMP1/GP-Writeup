@@ -34,7 +34,7 @@
 % ---------------
 % Listings Setup
 \usepackage{listings}
-\renewcommand{\lstlistingname}{Program Code}
+% \renewcommand{\lstlistingname}{Program Code}
 
 \author{Huw Taylor}
 \title{Tracing GP2 Execution} %TODO ~AMMEND: is 'Execution' needed? Maybe just Tracing GP2?
@@ -42,7 +42,7 @@
 \supervisor{Dr. Detlef Plump}
 \MEng
 %TODO ~CHECK: The word/page counts are up to date.
-\wordcount{4521}
+\wordcount{3748}
 \pagecount{16}
 % ~16000 words (55 pages) total
 \abstract{
@@ -225,7 +225,11 @@ An alternative approach is to keep the compiler as it is, but to have it also ge
 
 This approach obviously needs some way of keeping track of the last executed step, but it also has another problem to solve. Since GP is still non-deterministic, a method is needed to make sure the current step is correctly obtained. This method will need to ensure that each of the decisions chosen from rule sets and if- and try-statement branches is the same for each subsequent step through the program, until the program has terminated. This method could employ a lookup table of the decisions. This lookup table, along with the last executed step, could be stored in a small file alongside the output graph. Loading and saving to this file should have very little impact, and creating the lookup table when executing the graph program is also a simple process.
 
-Since the smallest steps of any relevance to the user are the matching and applications of a rule, this could be the smallest size of step. However, since only the match step of the last rule being run matters at all to the user for the tracing, the decision to have a single rule application as the smallest step makes more sense. This doesn't solve the issue of the user being able to stop between a match and a step, but a simple flag to stop after a match, and before an application, of a rule would be a simple solution.
+Since the smallest steps of any relevance to the user are the matching and applications of a rule, this could be the smallest size of step. However, since only the match step of the last rule being run matters at all to the user for the tracing, the decision to have a single rule application as the smallest step makes more sense. This doesn't solve the issue of the user being able to stop between a match and a step, but a simple flag to stop after a match, and before an application, of a rule would be a simple solution. However, this could be presented to a user as a step size for consistency.
+
+A problem arises when the user has stepped through rule applications to the point where the current step is some part of the way through a procedure, and then specifies to step through a number of procedures. Since not all procedures are of the same length, running to "the same point" in subsequent procedures is meaningless, so either the first procedure step must be finishing the current procedure, or this must be done before procedure steps are begun to be counted. This can be generalised to all larger step sizes than have previously been run. The former choice, that of finishing the current step size as the first step of that size, makes sense when considering that running the program (the largest possible step size) from some way through the program, would obviously not finish the 'program' step and then run the program again.
+
+Once stepping through the program is working, the resultant graph has to be saved somewhere for the editor to display it. This intermediate graph can either have its own file, or be saved as the output graph of the program. Having its own file may allow for further applications beyond this project, but being saved in the place of the resultant graph doesn't disrupt the existing flow of the overall system. The decision was made to use the latter, because it is a simple change for any future developer, and it has the least impact on the current system.
 
 The last problem to solve is that of illustrating what changes have happened. It's possible a user is able to visually see new nodes and edges after a rule application, but in a large graph this may be more difficult. 
 
@@ -237,35 +241,53 @@ The current implementation of the GP2 Editor adds positions for nodes to the GP2
 
 \section{Design Breakdown}
 
-%TODO ~ADD, ~MENTION: How to find out what nodes have been added/matched.
-%TODO ~MENTION: Using the output graph as the new input graph.
-%TODO ~ADD: More details about steps of different sizes. Maybe it'd just be instead of `if current_step == this { finalise; }` it would be something more like `if current_step == this && step_size == this { finalise; }`?
-% With step_size being an enum, that's read in from the arguments (args can either be ints or strings, but are converted to the enum when they're read in).
+Having identified key design problems and thought about preferred solutions, a breakdown of the proposed design is presented. There are certain things the compiler now needs to know in order to process tracing. The first of these is whether to do it at all. Given that the number of steps to perform and the size of those steps are to be passed to the program, the existence of these parameters are enough for the program to decide that it should perform tracing. These parameters also could require each other, as the size of the step is useless without how many of these steps are to be performed, and the number of steps is useless without knowing the size of the step. Alternatively there could be default values for these parameters. 
 
-% Factor out the finalisation, as it can happen at other parts of the code now.
+A default value for step size could either be a rule application, or a match/application of a rule, as these are the smallest step sizes. Any decision between these would be arbitrary and easy to change. A default value should be, for usability reasons, the value that is most often used. The tracing system being implemented here will use a rule application as its default step size, but ideally this would be reassessed when data of the size of steps users are most likely to run is obtained.
 
-% There are certain additional things we need to know at the beginning of the running of a graph program on a host graph:
-	% Have to know when to stop.
-	% Have to use the previously outputted graph. But only if we've stepped through.
-	% Have to know when to start, if we've previously only stepped through a bit.
-% Using these, we will do the following:
-	% Add a very small file that holds the number of where to start. Its existence mean to use the previously outputted graph.
-	% Adds a small brief File I/O cost at the beginning, but that's when the graph is loaded anyway, and it's really minor. Like 3 lines? (one for current step, one for highlighted nodes, one for highlighted edges)
-	% Have matching without executing.
+A default number of steps is less intuitive, as the program by default will run all the steps, however if tracing is being used by the user, perhaps a default value of a single step of the specified size could be used. 
 
- 
+The program needs no further information from the user to trace through steps, but requires information regarding the last executed step, if there was one. If not, then the program is simply starting the tracing from the beginning of the graph program, however if steps \emph{have} been made previously, we must begin the tracing from there. Also, if steps have been made previously, then rather than use the host graph, we need to use the graph outputted by the previous steps made. 
+
+From this external information, the program can infer the ending point. If the ending point is not the end of the program as it would be without tracing, the current step is saved, as well as any non-deterministic choices that have been made up to the current step. Also upon reaching the ending point, if the program is performing tracing, it must highlight the changes that have occured during the last step.
+
+Because the system can now stop its processing before the end of the graph program, it is wise to refactor out the process of finalisation. This will reduce code duplication, and will enhance maintainability. Finalisation includes garbage collection and saving the resultant graph. We can then add to this process the saving of the current step and non-deterministic choices, as well as the saving of highlights that have been made.
+
+This leaves only the problem of highlighting changes that have been made. This is twofold and involved both detecting or recording that changes have been made, and saving this information somewhere the editor can access. The latter part of this problem is discussed in the high-level design: it will be saved alongside the graph, and highlights will be added to the lexer and parser, and ignored by the parser. The problem of detecting the changes that have been made is more challenging. This is because the compiler currently is the only part of the program that has certain information regarding a rule and this information is not avaialable at runtime. This information can be gathered in a less efficient manner by analysing the differences between the graph before the rule application, and the graph afterwards. However, with large graphs, this could potentially worsen performance. Alternatively, the compiler could be modifed to add this functionality to be available at runtime. This would give allow the runtime program to be more powerful, but would add complexity to both the runtime code and the compiler, possibley also impacting on performance.
+
 \chapter{Implementation}
 % ~3333 words (between Design *and* Implementation)
 
-% User has to (optionally) give certain parameters. By default, the compiler does it's normal thing.
-% If a step size is specified, only that much is run.
+Before this project, the GP2 compiler took no command-line arguments. Now, however, it has certain parameters the user can pass. If the user passes the step flag '-s' they can pass one or both of the step size and the step count. The step size is case insensitive and can currently be a 'r' for a single rule, a 'm' for a match/application step of a rule, or a 'p' for a procedure. If no procedures other than the main declaration are defined, then 'p' will run the entire program. The step count is a positive integer which dictates the number of steps to run. If this number is high enough, however, the program will terminate normally when it has reached the end of the graph program.
 
-% Give the GP2-run some usage string, and show that.
-% 
+\begin{lstlisting}[label=code:usage, caption=GP2 Usage]
+Usage:\n
+    GP2-run [-s <steps> [<step_size>]]
+    GP2-run [-s <step_size> [<steps>]]
+        -s : only runs a specified number of steps.
+Step sizes:
+    r : a single rule.
+    m : a single match or application of a rule.
+    p : a single procedure.
+\end{lstlisting}
+
+Implementing tracing can be broken into two main stages. The first is avoiding running rules we've applied in previous step executions, and the second is applying the number of steps specified. 
+
+% Factor out the finalisation, as it can happen at other parts of the code now. Reference figure \ref{code:finalise} as the finalise method with additions of saving the current step.
+
+%TODO ~MENTION: two steps.
+	% first is getting up to date
+	% second is running the step(s)
+	
+	
+% Counter for each step size. 'Sgotta be, I reckon. Running a larger step size will set all the counters for the smaller step sizes to 0.
+
+% With step_size being an enum, that's read in from the arguments (args can either be ints or strings, but are converted to the enum when they're read in, and with the smallest step (match/application) just setting a flag to true).
 
 \section{Limiting the steps} %TODO ~AMMEND: change this title.
 
 % The compiler currently generates code. It has methods for generating rule steps, and method for generating larger structures. I will add code at the end of these methods to see if the number of steps specified has been reached.
+% This may be a lot of extra stuff in big graph programs with lots of rule, but it scales linearly with the number of rules which is good. Not crazy complex or overheady.
 
 % A simple overview of the implementation is this:
 
@@ -289,7 +311,8 @@ endif
 % This will correctly end the program after X steps. However, running the program again will run the first steps again. So we need to start where we left off. So let's have the finalise code print the current_step to a file.
 % The output_directory is given by the generating code and will the path to the same output directory where the resultant graph is stored.
 
-\begin{lstlisting}[label=code:save_current_step, caption=Finalise step, language=C]
+%TODO ~ADD: The decisions made for non-deterministic choices aren't saved here. They should be saved here.
+\begin{lstlisting}[label=code:finalise, caption=Finalise step, language=C]
 void finalise(FILE *output_file)
 {
    FILE *fp = fopen("output_directory/step.trace", "w");
@@ -334,9 +357,9 @@ void finalise(FILE *output_file)
 % Functionality
 	% Ticks all the boxes.
 % Performance
-	% Is totally fine. Has its own section..
+	% Is totally fine. Has its own section...
 % Maintainability
-	% Is good. I didn't distrupt things too much. I was highly coupled with existing implemetations though.
+	% Is good. I didn't distrupt things too much. I was highly coupled with existing implemetations (of the compiler, not of the editor) though.
 % Usability?
 
 \subsection{Performance}
@@ -352,6 +375,7 @@ void finalise(FILE *output_file)
 % Stepping backwards? Would be a challenge.
 % Visualisations of graph programs?
 	% 
+% Better step sizes, with procedures each having their own step size.
 %TODO ~ADD: more future work ideas.
 
 \bibliography{references}
