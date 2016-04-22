@@ -34,7 +34,9 @@
 % ---------------
 % Listings Setup
 \usepackage{listings}
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
 % \renewcommand{\lstlistingname}{Program Code}
+\usepackage{courier}
 
 \author{Huw Taylor}
 \title{Tracing GP2 Execution} %TODO ~AMMEND: is 'Execution' needed? Maybe just Tracing GP2?
@@ -42,15 +44,15 @@
 \supervisor{Dr. Detlef Plump}
 \MEng
 %TODO ~CHECK: The word/page counts are up to date.
-\wordcount{3748}
-\pagecount{16}
+\wordcount{5681}
+\pagecount{22}
 % ~16000 words (55 pages) total
 \abstract{
 % ~66 words
 
 }
 \acknowledgements{
-I would like to thank Christopher Bak for his support throughout the project. His advice on the workings of the GP2 compiler has been invaluable.
+I would like to thank Christopher Bak for his continued support throughout the project. His advice on the workings of the GP2 compiler has been invaluable.
 % Detlef?
 }
 
@@ -193,7 +195,7 @@ Breakpoints allow for the stopping or pausing of a program part of the way throu
 % END OF LITERATURE REVIEW
 
 \chapter{Design}
-\section{Users \& Requirements}
+\section{Users \& Requirements} %TODO ~AMMEND: Maybe call this Problem Analysis?
 % ~2000 words (Problem analysis)
 % ~3333 words (between Design *and* Implementation)
 
@@ -253,7 +255,19 @@ From this external information, the program can infer the ending point. If the e
 
 Because the system can now stop its processing before the end of the graph program, it is wise to refactor out the process of finalisation. This will reduce code duplication, and will enhance maintainability. Finalisation includes garbage collection and saving the resultant graph. We can then add to this process the saving of the current step and non-deterministic choices, as well as the saving of highlights that have been made.
 
-This leaves only the problem of highlighting changes that have been made. This is twofold and involved both detecting or recording that changes have been made, and saving this information somewhere the editor can access. The latter part of this problem is discussed in the high-level design: it will be saved alongside the graph, and highlights will be added to the lexer and parser, and ignored by the parser. The problem of detecting the changes that have been made is more challenging. This is because the compiler currently is the only part of the program that has certain information regarding a rule and this information is not avaialable at runtime. This information can be gathered in a less efficient manner by analysing the differences between the graph before the rule application, and the graph afterwards. However, with large graphs, this could potentially worsen performance. Alternatively, the compiler could be modifed to add this functionality to be available at runtime. This would give allow the runtime program to be more powerful, but would add complexity to both the runtime code and the compiler, possibley also impacting on performance.
+This leaves only the problem of highlighting changes that have been made. This is twofold and involved both detecting or recording that changes have been made, and saving this information somewhere the editor can access. The latter part of this problem is discussed in the high-level design: it will be saved alongside the graph, and highlights will be added to the lexer and parser, and ignored by the parser. 
+
+The problem of detecting the changes that have been made is more challenging. This is because the compiler currently is the only part of the program that has certain information regarding a rule and this information is not avaialable at runtime. This information can be gathered in a less efficient manner by analysing the differences between the graph before the rule application, and the graph afterwards. However, with large graphs, this could potentially worsen performance. Alternatively, the compiler could be modifed to add this functionality to be available at runtime. This would give allow the runtime program to be more powerful, but would add complexity to both the runtime code and the compiler, possibley also impacting on performance.
+
+The changes that this systems aims to record are as follows:
+\begin{itemize}
+	\item matched node/edge
+	\item new node/edge
+	\item relabeled node/edge
+	\item remarked node/edge
+\end{itemize}
+
+However, where possible, this will be implemented in such a fashion so as to easily allow additional features to be recorded.
 
 \chapter{Implementation}
 % ~3333 words (between Design *and* Implementation)
@@ -261,7 +275,7 @@ This leaves only the problem of highlighting changes that have been made. This i
 Before this project, the GP2 compiler took no command-line arguments. Now, however, it has certain parameters the user can pass. If the user passes the step flag '-s' they can pass one or both of the step size and the step count. The step size is case insensitive and can currently be a 'r' for a single rule, a 'm' for a match/application step of a rule, or a 'p' for a procedure. If no procedures other than the main declaration are defined, then 'p' will run the entire program. The step count is a positive integer which dictates the number of steps to run. If this number is high enough, however, the program will terminate normally when it has reached the end of the graph program.
 
 \begin{lstlisting}[label=code:usage, caption=GP2 Usage]
-Usage:\n
+Usage:
     GP2-run [-s <steps> [<step_size>]]
     GP2-run [-s <step_size> [<steps>]]
         -s : only runs a specified number of steps.
@@ -273,75 +287,77 @@ Step sizes:
 
 Implementing tracing can be broken into two main stages. The first is avoiding running rules we've applied in previous step executions, and the second is applying the number of steps specified. 
 
-% Factor out the finalisation, as it can happen at other parts of the code now. Reference figure \ref{code:finalise} as the finalise method with additions of saving the current step.
+Since the system no longer necessarily runs the entire graph program before terminating, this required factoring out the code involved in finalising, as discussed in the design. The finalisation code can be seen in listing \ref{code:finalise}, along with additions of saving the current step and decisions made.
 
-%TODO ~MENTION: two steps.
-	% first is getting up to date
-	% second is running the step(s)
-	
-	
-% Counter for each step size. 'Sgotta be, I reckon. Running a larger step size will set all the counters for the smaller step sizes to 0.
-
-% With step_size being an enum, that's read in from the arguments (args can either be ints or strings, but are converted to the enum when they're read in, and with the smallest step (match/application) just setting a flag to true).
-
-\section{Limiting the steps} %TODO ~AMMEND: change this title.
-
-% The compiler currently generates code. It has methods for generating rule steps, and method for generating larger structures. I will add code at the end of these methods to see if the number of steps specified has been reached.
-% This may be a lot of extra stuff in big graph programs with lots of rule, but it scales linearly with the number of rules which is good. Not crazy complex or overheady.
-
-% A simple overview of the implementation is this:
-
-% 1. Find the parts of the code that generate different sizes of step.
-% 2. Implement breakpoints after each of them.
-
-\begin{lstlisting}[label=code:breakpoint_1, caption=Pseudocode of breakpoints]
-rule_step_application
-if we_should_stop
-    exit
-endif
-rule_step_application
-if we_should_stop
-    exit
-endif
-...
-\end{lstlisting}
-
-% This needs the addition of stopping *in* the rule_step_application (between match and apply)
-
-% This will correctly end the program after X steps. However, running the program again will run the first steps again. So we need to start where we left off. So let's have the finalise code print the current_step to a file.
-% The output_directory is given by the generating code and will the path to the same output directory where the resultant graph is stored.
-
-%TODO ~ADD: The decisions made for non-deterministic choices aren't saved here. They should be saved here.
+\begin{minipage}{\linewidth} % Stops the listing from breaking across pages.
 \begin{lstlisting}[label=code:finalise, caption=Finalise step, language=C]
 void finalise(FILE *output_file)
 {
-   FILE *fp = fopen("output_directory/step.trace", "w");
-   if (fp != NULL)
+   if (step_size != NULL)
    {
-      fprintf(fp, "%d\n", current_step);
+      FILE *fp = fopen("output_directory/step.trace", "w");
+      if (fp != NULL)
+      {
+         fprintf(fp, "%d %d %d\n", 
+                 current_procedure_step, current_rule_step, current_match_step);
+         int i;
+         for (i = 0; i < decision_count - 1; i ++)
+         {
+            fprintf(fp, "%d ", decisions[i]);
+         }
+         fprintf(fp, "%d\n", decisions[decision_count - 1]);
+      }
+      fclose(fp);
    }
-   fclose(fp);
    printGraph(host, output_file);
    printf("Output graph saved to file gp2.output\n");
    garbageCollect();
    fclose(output_file);
 }
 \end{lstlisting}
+\end{minipage}
 
-% Previously this was at the end of the main method, and didn't have the first 6 lines, but I refactored it into its own method, added the saving of the current step. Finalise can be called not just at the end of the program now (see previous listing).
+The current step of a program is obtained from a number of counters, one for each unit of step size. Smaller steps loop round back to zero upon the completion of a larger step size, in the same way, with time, minutes reset to zero when an hour is completed. So the current step for a given trace could be 2 procedures and 12 rule applications, or could be 107 procedures, and 1 rule application, and 1 rule match. The difference to time, however, is that while 60 minutes is always one hour, this does not follow into the tracing of GP2. Since the number of rule applications in a procedure is not constant, the length of one procedure in rule applications is not necessarily the same length as another procedure. Due to the non-determinism of GP2, it's also the case that one procedure's execution in one instance of the graph program running may not have the same number of rule applications as in another instance. This necessitates a counter of how many steps of the given step size have been performed, as the end step cannot be calculated ahead of time. 
 
-\section{Continuing} %TODO ~AMMEND: change this title.
+The GP2 compiler currently generates code for the graph program. It has methods for generating rule steps, and generating procedures. It is in these methods, upon the completion of each of these steps that increments to the relevant counters will be added. These additions scale linearly with the number of rules and procedures, and so while in large graph programs the number of additional lines of code can reach large numbers, it stays in proportion with the complexity of the graph program, thereby not adding much overhead with respects to performance.
 
-% We need to check to see if we are indeed "continuing". If not, we don't change anything about the running of the program. This is because we are either, starting again with a specified number of steps, which is addressed in Limiting the Steps, or we're running the program without tracing.
-% However, if we *are* continuing, then we need to load in the previous output as the new input, and load the current_step.
-%TODO ~ADD: some code to show this.
+A simple pseudocode of the notion behind breakpoints is illustrated in listing \ref{code:breakpoint_1}, where a rule step is shown on the first line, with its associated breakpoint immediately following. Step\_Size is the value passed in by the user, or the default value of "r", meaning a rule application. Steps\_To\_Run is the value passed by the user, or the default value of -1, which will run the entire the graph program.
 
-%TODO ~MENTION: the problem of not having the rule datatype at runtime, so we can't as easily find the nodes and edges that are new in the RHS of the rule.
+\begin{lstlisting}[label=code:breakpoint_1, caption=Pseudocode of breakpoints]
+Rule_Step_Application()
+Save_Highlights(Rule_Step)
+if Step_Size = "R"
+    Steps_To_Run <- Steps_To_Run - 1
+endif
+if Steps_To_Run = 0
+    Finalise()
+    Exit
+endif
+...
+\end{lstlisting}
 
-\chapter{Conclusion}
-% ~1333 words
+Ommited for clarity in \ref{code:breakpoint_1} is the stopping in the middle of the rule application, between the match and the application. This, and breakpoints after procedures follow the game structure to the rule application step breakpoint.
 
-\section{Evaluation}
+This style of breakpoint simply and elegantly stops the graph program in the middle of its execution after a certain number of steps. However, as it is, running the graph program again will run these first steps again. It will also run these steps on the original host graph, which is not the intended behaviour. The second of these problems is a simple matter of checking the contents of a file called 'gp2.trace' and, if it exists and has a current step of something other than 0, to load the host graph from 'gp2.out' instead of the host graph, 'gp2.out' being where the resultant graph of a graph program is saved. The 'gp2.trace' file is now generated with a value of 0 for the current step when the graph program is compiled by the GP2 compiler. It is created in the same directory as the specified output directory. The current step at the end of a trace is then saved in this file. 
+
+The problem of not running the first N steps (where N is the number we have previously stepped through, and N < the length of the graph program) again also uses the contents of this file. It obtains the current position of each of the step sizes, and also the decisions made during non-deterministic choices so the first N steps can be skipped. See the finalise method (\ref{code:finalise}) for the contents of this file.
+
+The solution to not running the steps that have just been run is also very simple, and takes advantage of the fact that the GP2 compiler is generating the program code. Each step is wrapped in a if statement. The condition of this if statement is that the current step is equal to, or greater than, the starting step. The starting step is loaded from the trace file, and the current step begins at zero. Both the starting step and current step are made up of the counters for each of the step sizes. So for the current step to be smaller than the starting step, which is the case in which the step will be skipped, the following must be true:
+
+$current\_procedure\_step < starting\_step\_proc ||
+(current\_procedure\_step == starting\_step\_proc \&\& current\_rule\_step < starting\_step\_rule);$
+
+The reason that the match step is not included in this is because the match step can either be 0 or 1, signifying respectively that the application of the rule has been done and that the only the match has been done. This means if the starting\_step\_rule is a 0, then the current\_rule\_step cannot be lower than it, and in the case where it's a 1, then matching the rule again is necessary to apply the rule for the code. Running the match also has no impact on the graph, and so there is no danger is running it again.
+
+In listing \ref{code:breakpoint_1}, it is also shown that the saving of highlights is performed after a rule's application. The reason this isn't part of finalisation is that finalisation is also run at the end of of a graph program executing in its entirety, without any tracing. It's also because, in the event of a procedure being run as a step, the changes made across that procedure should all be highlighted.
+
+The saving of highlights involves keeping track of new, or different features of the graph across the tracing steps. The system could have one list of highlights for nodes, and one list of highlights for edges, with the index of the list being the id of the node or edge. This, however doesn't allow for a node to have multiple highlights, which may be desired. The solution to this would be to have a list of highlights for each node and edge, but many of these lists would be empty, so the better solution would be to have a list of nodes and a list of edges for each highlight type. With all but the smallest of graphs, there are fewer highlight types than there are nodes, and so this reduces the list variables to two for each highlight type. The system this project implements has four features for both nodes and edges, so this creates a need for eight lists. Nodes that are subsequently removed will be removed from any lists of additions and changes they they may be on. Also, nodes that are relabelled twice, for example, will only appear on the list once.
+
+If the user decides to run a large step these eight lists may become large and have an impact on performance. Each can potentially grow to the size of the number of nodes or edges in the resultant graph, although this is an upper limit. This will be tested and discussed in the evaluation section. %TODO fulfill this promise :)
+
+Detecting when a node has changed is a difficult problem. Information regarding the RHS of a rule is not known at runtime, and so either a long process of deducing changes must happen, or this information regarding a rule must be made avaiable during runtime. Both of these are large undertakings. The first could potentially have a severe impact on performance of the system, and the second requires a large modification to the compiler, which also has a significant change in the structure of the generated code. Alternatively, the compiler could add to the code generating rules in order to record the changes being made. This approach has a smaller impact on the overall flow of both the compiler and the generated code, as it generates the code reporting changes immediateley after generating the code to peform the changes. This last solution is the one implemented in the tracing system. However, if future additions to GP require that the runtime have access to information regarding rules then the decision made for this system may no longer be the best one.
+
+\chapter{Evaluation}
 % ~3333 words
 
 % Check out p152 in Chris's thesis for an evaluation
@@ -350,8 +366,9 @@ void finalise(FILE *output_file)
 % Talk about what I got done.
 	% Stepping through
 	% Various size steps
-	% 
+	% Highlighting changes
 % Talk about what I didn't get done.
+	% 
 
 % Stuff I can Evaluate
 % Functionality
@@ -363,19 +380,31 @@ void finalise(FILE *output_file)
 % Usability?
 
 \subsection{Performance}
-
 % Chris's paper ~page 73 for example of benchmarking write-up
 % These are just general timings. Use them to make shit up
 	% time elapsed was 0.002972 for 2 color on 10 grid
 	% time elapsed was 0.002632 for shortest path
+	% I think these are seconds. 
+	
+% Do like, execution before tracing, execution after tracing, but the whole program
+
+
+\chapter{Conclusion}
+% ~1333 words
+
+% Say what you did. Say whether you done good.
+% Outstanding problems.
+	% not the best way of finding changes to highlight them.
 
 \section{Future Work}
 
 % Having the Graphical Editor recognise the special labels and draw attention to changes is the obvious immediate next thing to do.
 % Stepping backwards? Would be a challenge.
-% Visualisations of graph programs?
-	% 
+
 % Better step sizes, with procedures each having their own step size.
+
+% Visualisations of graph programs?
+	
 %TODO ~ADD: more future work ideas.
 
 \bibliography{references}
