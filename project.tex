@@ -35,7 +35,6 @@
 % Listings Setup
 \usepackage{listings}
 \lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
-% \renewcommand{\lstlistingname}{Program Code}
 \usepackage{courier}
 
 \author{Huw Taylor}
@@ -44,8 +43,8 @@
 \supervisor{Dr. Detlef Plump}
 \MEng
 %TODO ~CHECK: The word/page counts are up to date.
-\wordcount{5681}
-\pagecount{22}
+\wordcount{6456}
+\pagecount{21}
 % ~16000 words (55 pages) total
 \abstract{
 % ~66 words
@@ -53,7 +52,7 @@
 }
 \acknowledgements{
 I would like to thank Christopher Bak for his continued support throughout the project. His advice on the workings of the GP2 compiler has been invaluable.
-% Detlef?
+%TODO Thank Detlef for his faith in me.
 }
 
 \begin{document}
@@ -212,6 +211,7 @@ It is critical to correctly identify the requirements for a system to be determi
 	\item A program must be able to be stepped through, that is, a portion of the program (step) must be able to be run on either the host graph, or the resultant graph of a previous step's execution.
 	\item These steps would ideally be of specifiable sizes.
 	\item These steps must be able to be displayed graphically in the GP2 Editor.
+	\item The changes to the graph made during these steps are to be made available.
 	\item These steps would ideally be displayed in such a way to highlight any changes made in a step.
 \end{enumerate}
 
@@ -340,7 +340,7 @@ Ommited for clarity in \ref{code:breakpoint_1} is the stopping in the middle of 
 
 This style of breakpoint simply and elegantly stops the graph program in the middle of its execution after a certain number of steps. However, as it is, running the graph program again will run these first steps again. It will also run these steps on the original host graph, which is not the intended behaviour. The second of these problems is a simple matter of checking the contents of a file called 'gp2.trace' and, if it exists and has a current step of something other than 0, to load the host graph from 'gp2.out' instead of the host graph, 'gp2.out' being where the resultant graph of a graph program is saved. The 'gp2.trace' file is now generated with a value of 0 for the current step when the graph program is compiled by the GP2 compiler. It is created in the same directory as the specified output directory. The current step at the end of a trace is then saved in this file. 
 
-The problem of not running the first N steps (where N is the number we have previously stepped through, and N < the length of the graph program) again also uses the contents of this file. It obtains the current position of each of the step sizes, and also the decisions made during non-deterministic choices so the first N steps can be skipped. See the finalise method (\ref{code:finalise}) for the contents of this file.
+The problem of not running the first N steps (where N is the number we have previously stepped through, and N is less than the length of the graph program) again also uses the contents of this file. It obtains the current position of each of the step sizes, and also the decisions made during non-deterministic choices so the first N steps can be skipped. See the finalise method (\ref{code:finalise}) for the contents of this file.
 
 The solution to not running the steps that have just been run is also very simple, and takes advantage of the fact that the GP2 compiler is generating the program code. Each step is wrapped in a if statement. The condition of this if statement is that the current step is equal to, or greater than, the starting step. The starting step is loaded from the trace file, and the current step begins at zero. Both the starting step and current step are made up of the counters for each of the step sizes. So for the current step to be smaller than the starting step, which is the case in which the step will be skipped, the following must be true:
 
@@ -357,37 +357,84 @@ If the user decides to run a large step these eight lists may become large and h
 
 Detecting when a node has changed is a difficult problem. Information regarding the RHS of a rule is not known at runtime, and so either a long process of deducing changes must happen, or this information regarding a rule must be made avaiable during runtime. Both of these are large undertakings. The first could potentially have a severe impact on performance of the system, and the second requires a large modification to the compiler, which also has a significant change in the structure of the generated code. Alternatively, the compiler could add to the code generating rules in order to record the changes being made. This approach has a smaller impact on the overall flow of both the compiler and the generated code, as it generates the code reporting changes immediateley after generating the code to peform the changes. This last solution is the one implemented in the tracing system. However, if future additions to GP require that the runtime have access to information regarding rules then the decision made for this system may no longer be the best one.
 
+%TODO ~MENTION: That I didn't get to add anything to the editor. So the changes aren't highlighted. And stepping through doesn't work, because the editor calls GP2-run (I asumme) without any parameters.
+
 \chapter{Evaluation}
 % ~3333 words
 
-% Check out p152 in Chris's thesis for an evaluation
+In order to evaluate the system presented in this paper, we must refer back to the aims it set out to achieve. The requirements outlined in the design section ask that certain tracing features are added to GP2. 
 
-% Relate back to requirements
-% Talk about what I got done.
-	% Stepping through
-	% Various size steps
-	% Highlighting changes
-% Talk about what I didn't get done.
-	% 
+Certain key attributes of the system were outlined as priorities. These include performance and maintainability.
+Due to the addtions to, and alterations of, the compiler, there is the potential for a reduction in its speed and efficiency. However, throughout the project, having as minimal an impact on performance as possible was a driving factor so as to not lower the viability of the compiler as a tool.
 
-% Stuff I can Evaluate
-% Functionality
-	% Ticks all the boxes.
-% Performance
-	% Is totally fine. Has its own section...
-% Maintainability
-	% Is good. I didn't distrupt things too much. I was highly coupled with existing implemetations (of the compiler, not of the editor) though.
-% Usability?
+Maintainability is a property of software which equates to how easily modified it is. This includes factors such as the frequency, distribution, and quality of the comments, as well as adhering to naming conventions. Also, the logical separation of functions into well-named, self-contained methods helps other developers newly coming to the system gain an understanding of the code more quickly. Maintainability can often be sacrificed when attmepting to create code that runs very efficiently. Striking a balance of preserving the performace of the system, while adding functionality in a way in which doesn't disrupt the readability of the code, is an important trade-off needed to be made in any system.
 
-\subsection{Performance}
-% Chris's paper ~page 73 for example of benchmarking write-up
-% These are just general timings. Use them to make shit up
-	% time elapsed was 0.002972 for 2 color on 10 grid
-	% time elapsed was 0.002632 for shortest path
-	% I think these are seconds. 
-	
-% Do like, execution before tracing, execution after tracing, but the whole program
+This project ensures a high level of maintainability %TODO ~ADD THIS
 
+%
+% A program must be able to be stepped through, that is, a portion of the program (step) must be able to be run on either the host graph, or the resultant graph of a previous step's execution.
+% These steps would ideally be of specifiable sizes.
+% These steps must be able to be displayed graphically in the GP2 Editor.
+% These steps would ideally be displayed in such a way to highlight any changes made in a step.
+%
+
+The necessary functionality of the system is defined in the requirements. The first of these requirements is that the system allows the user to step through a portion of the graph program. The second requirement is that these steps be of a specified size with respect to the graph program. The third requirement is that these steps must be made available to external programs, including the GP2 Editor. The fourth and fifth are that any changes made during these steps must also be made available to external programs, with the GP2 Editor in particular recognising the changes and displaying them to the user.
+
+To address these problems, additional features were added to allow the generated runtime program to step through a compiled graph program. 
+
+The first requirement was successfully achieved and the implementation now allows a user to specify the number of steps they wish to perform. The size of these steps are also configurable, which satisfies the second requirement, however specific procedures of specific graph programs cannot be steps, only one procedure, regardless of how many rule applications that turns out to be. This is a potential area of improvement for this project, and is further discussed in the section on future work. %TODO keep promise in future work.
+
+The third and fourth requirements have both been met. The system outputs the resultant graphs in the same destination as it would otherwise, and the GP2 lexer has been extended to allow for highlighting of changes of a graph. Both of these additions to the GP2 compiler integrate themselve seamlessly into existing systems. This maximises intergrability with the GP2 editor, and other future applications.
+
+The fifth requirement was not satisfied. The compiler does all it needs to in order to provide tools such as the editor with the information they need in order to display the steps of a trace. However, this project could not satisfactorily implement the changes necessary to the GP2 editor within the timeframe allotted. This is unfortunate because it is the sole outstanding step required to allow users to visualise the process of tracing through a graph program.
+
+The quality attributes of this system for the various stakeholders in it comprised functionality, usablilty, maintainability, integrability, and performance. Given that work didn't happen to the GP2 Editor, usability is no longer a particular priority.
+
+For developers creating tools to integrate with GP2 and its compilation pipeline, the tracing additions have a high level of interoperability.
+
+For users of the GP2 compiler, all the functionality of stepping through a graph program exists and can be easily applied.
+
+\section{Performance}
+
+So as to make sure that the additions of tracing to both the compiler and the generated runtime code did not affect performance too severly, I compared the execution of various graph programs with and without tracing. This is comparing the latest GP2 compiler and its generated code without any of the added implemented features outlined in this thesis, with the final system implemented as part of this project. Table \ref{table:compilation_timings} shows the comparisons of the timings taken to compile the graph program with and without tracing. Table \ref{table:whole_execution_timings} shows the timings taken to run the entirety of a graph program with the extra tracing code, and compares it to the time taken without.
+
+%TODO ~ADD: numbers to these tables. :D
+\begin{table}
+\centering
+\begin{tabular}{p{4cm} | l | l | l}
+	Graph Program & \# of Rules & Time w/o Tracing & Time w/ Tracing \\ 
+	\hline
+	2 colouring & 5 & ???? & 0.002972 \\
+	Dijkstra's shortest path & 3 & ???? & 0.002632 \\
+	%TODO ~ADD: ADD "data"
+\end{tabular}
+\caption{Compilation Timing Comparisons}
+\label{table:compilation_timings}
+\end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{p{4cm} | l | l | l}
+	Graph Program & \# of Nodes & Time w/o Tracing & Time w/ Tracing \\ 
+	\hline
+	2 colouring & 100 & ???? & ???? \\
+	Dijkstra's shortest path & 6 & ???? & ???? \\
+	%TODO ~ADD: ADD "data"	
+\end{tabular}
+\caption{Compilation Timing Comparisons}
+\label{table:whole_execution_timings}
+\end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{l | l | l | l}
+	Graph Program & Number of Nodes in Host Graph & Number of Steps Rrun & Time Taken \\
+	\hline
+	%TODO ~ADD: ADD "data"
+\end{tabular}
+\caption{Compilation Timing Comparisons}
+\label{table:step_execution_timings}
+\end{table}
 
 \chapter{Conclusion}
 % ~1333 words
@@ -408,6 +455,10 @@ Detecting when a node has changed is a difficult problem. Information regarding 
 %TODO ~ADD: more future work ideas.
 
 \bibliography{references}
+\pagenumbering{roman}
 
 \chapter{Appendices}
 \end{document}
+
+
+% yo, yo , listen up, yo, i'm spitting bars about compilin' graphs cos we gotts step through in ordfer to know how it do. so we gotta start embracin' the world of tracin'. 
