@@ -5,8 +5,8 @@
   \node (n1) [vertex, label=below:{1}] at (0, 0) {};
   \node (n2) [vertex, label=below:{2}] at (0.5, 0) {};
   \node (n3) [vertex, label=below:{3}] at (1, 0) {};
-  \path [edge] (n1) edge node {} (n2);
-  \path [edge] (n2) edge node {} (n3);
+  \path [edge'] (n1) edge node {} (n2);
+  \path [edge'] (n2) edge node {} (n3);
   \node (l) [graph_small, fit={(n1) (n2) (n3)}, label=below:{LHS}] {};
   
   \node (n4) [vertex, label=below:{1}] at (2, 0) {};
@@ -17,9 +17,9 @@
   \node (n7) [vertex, label=below:{1}] at (4, 0) {};
   \node (n8) [vertex, label=below:{2}] at (4.5, 0) {};
   \node (n9) [vertex, label=below:{3}] at (5, 0) {};
-  \path [edge] (n7) edge node {} (n8);
-  \path [edge] (n8) edge node {} (n9);
-  \path [edge'] (n7) edge node {} (n9);
+  \path [edge'] (n7) edge node {} (n8);
+  \path [edge'] (n8) edge node {} (n9);
+  \path [edge] (n7) edge node {} (n9);
   \node (r) [graph_small, fit={(n7) (n8) (n9)}, label=below:{RHS}] {};
 \end{tikzpicture}
 \caption{Rule Example}
@@ -30,16 +30,18 @@
 \centering
 \begin{tikzpicture}[scale=2]
   \node (n1) [vertex, label=below:{1}] at (0, 0) {};
-  \node (n2) [vertex, label=below:{2}] at (1, 0) {};
-  \path [edge] (n1) edge node {} (n2);
-  \node (l) [graph_small, fit={(n1) (n2)}, label=below:{LHS}] {};
+  \node (n2) [vertex, label=below:{2}] at (0.5, 0) {};
+  \node (n3) [vertex, label=below:{3}] at (1, 0) {};
+  \path [edge'] (n1) edge node {} (n2);
+  \path [edge'] (n2) edge node {} (n3);
+  \node (l) [graph_small, fit={(n1) (n2) (n3)}, label=below:{LHS}] {};
   
   \node (n7) [vertex, label=below:{1}] at (2, 0) {};
   \node (n8) [vertex, label=below:{2}] at (2.5, 0) {};
   \node (n9) [vertex, label=below:{3}] at (3, 0) {};
-  \path [edge] (n7) edge node {} (n8);
-  \path [edge] (n8) edge node {} (n9);
-  \path [edge'] (n7) edge node {} (n9);
+  \path [edge'] (n7) edge node {} (n8);
+  \path [edge'] (n8) edge node {} (n9);
+  \path [edge] (n7) edge node {} (n9);
   \node (r) [graph_small, fit={(n7) (n8) (n9)}, label=below:{RHS}] {};
 \end{tikzpicture}
 \caption{Rule Example without Interface Graph}

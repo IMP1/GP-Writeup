@@ -1,36 +1,48 @@
 \begin{figure}
 \label{fig:simple_program}
 \centering
-\begin{tikzpicture}[scale=2]
-  \node (code) at (0, 3.5) {$main = InitTags!; Reduce$};
-  \node (rule_1) at (0, 2.8) {$InitTags(a,b,c,n : int) = $};
+\begin{tikzpicture}[scale=2, y=-1cm]
 
-  \node (n1) [vertex, label=below:{1}] at (0, 2.1) {$a_n$};
-  \node (n2) [vertex, label=below:{2}] at (1, 2.1) {c};
-  \path [edge] (n1) edge node[label=above:{b}] {} (n2);
-  \node (r1_l) [rule, fit={(n1) (n2)}] {};
+  \node (main_decl) [code, text width=9cm] at (0, 0) {main = init; Traverse!};
+  \node (proc_decl) [code, text width=9cm] at (0, 0.3) {Traverse = \{add, reduce\}};
   
-  \node (n3) [vertex, label=below:{1}] at (2, 2.1) {$a_n$};
-  \node (n4) [vertex, label=below:{2}] at (3, 2.1) {$c_n+b$};
-  \path [edge] (n3) edge node[label=above:{b}] {} (n4);
-  \node (r1_r) [rule, fit={(n3) (n4)}] {};
+  \begin{scope}[yshift=-1cm]
+    \node (rule_decl) [code, text width=9cm] at (0, 0) {init(x: list) = };
+    \node (n1) [vertex, label=below:{1}, minimum size=1cm, mark_red] at (0, 0.6) {$x$};   
+    \node (n2) [vertex, label=below:{1}, minimum size=1cm, mark_red] at (1, 0.6) {$x:0$};
+    \draw[derivation] (n1) -> (n2);
+  \end{scope}
   
-  \draw[derivation] (r1_r) -> (r1_l); % dafuq is this backwards bullshit?
+  \begin{scope}[yshift=-2.8cm]
+    \node (rule_decl) [code, text width=9cm] at (0, 0) {add(x,y: list; m,n: int) = };
+    \node (n1) [vertex, label=below:{1}, minimum size=1cm, mark_violet] at (0, 0.6) {$x:m$};
+    \node (n2) [vertex, label=below:{2}, minimum size=1cm] at (1, 0.6) {$y$};
+    \path [edge] (n1) edge node[label=above:{n}] {} (n2);
+    \node (lhs) [rule, fit={(n1) (n2)}] {};
   
-  \node (rule_2) at (0, 1.5) {$Reduce(a,b,c,n,i : int) = $};  
+    \node (n3) [vertex, label=below:{1}, minimum size=1cm, mark_violet] at (2, 0.6) {$x:m$};
+    \node (n4) [vertex, label=below:{2}, minimum size=1cm, inner sep=0pt, mark_grey] at (3, 0.6) {\footnotesize $y:m+n$};
+    \path [edge] (n3) edge node[label=above:{n}] {} (n4);
+    \node (rhs) [rule, fit={(n3) (n4)}] {};
   
-  \node (n5) [vertex, label=below:{1}] at (0, 0.8) {$a_n$};
-  \node (n6) [vertex, label=below:{2}] at (1, 0.8) {$c_i$};
-  \path [edge] (n5) edge node[label=above:{b}] {} (n6);
-  \node (r2_l) [rule, fit={(n5) (n6)}] {};
+    \draw[derivation] (rhs) -> (lhs);
+  \end{scope}
   
-  \node (n7) [vertex, label=below:{1}] at (2, 0.8) {$a_n$};
-  \node (n8) [vertex, label=below:{2}] at (3, 0.8) {$c_n+b$};
-  \path [edge] (n7) edge node[label=above:{b}] {} (n8);
-  \node (r2_r) [rule, fit={(n7) (n8)}] {};
+  \begin{scope}[yshift=-4.6cm]
+    \node (rule_decl) [code, text width=9cm] at (0, 0) {reduce(x,y: list; m,n,p: int) = };
+    \node (n1) [vertex, label=below:{1}, minimum size=1cm, mark_violet] at (0, 0.6) {$x:m$};
+    \node (n2) [vertex, label=below:{2}, minimum size=1cm, mark_grey] at (1, 0.6) {$y:p$};
+    \path [edge] (n1) edge node[label=above:{n}] {} (n2);
+    \node (lhs) [rule, fit={(n1) (n2)}] {};
   
-  \draw[derivation] (r2_r) -> (r2_l); % ~EDIT: Maybe use the deriviation tikz thing defined at the top.
-  \node (rule_2_condition) at (0, 0) {$where n+b < i$};  
+    \node (n3) [vertex, label=below:{1}, minimum size=1cm, mark_violet] at (2, 0.6) {$x:m$};
+    \node (n4) [vertex, label=below:{2}, minimum size=1cm, inner sep=0pt, mark_grey] at (3, 0.6) {\footnotesize $y:m+n$};
+    \path [edge] (n3) edge node[label=above:{n}] {} (n4);
+    \node (rhs) [rule, fit={(n3) (n4)}] {};
+  
+    \draw[derivation] (rhs) -> (lhs);
+    \node (rule_2_condition) [code] at (0, 1.6) {where m + n < p};
+  \end{scope}
 
 \end{tikzpicture}
 \caption{Simple Dijkstra Program Example}

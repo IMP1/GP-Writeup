@@ -21,15 +21,23 @@
                  fit,         % For easily fitting nodes inside another one
                  arrows,
                  positioning, % For easy node-relative placements
+                 decorations.pathreplacing,
                }
 \tikzstyle{edge} = [->, bend left]
+\tikzstyle{biedge} = [bend left]
 \tikzstyle{edge'} = [->, bend right]
-\tikzstyle{vertex} = [circle, minimum width=0.5cm, text centered, draw=black]
-\tikzstyle{mark_grey} = [fill=grey]
+\tikzstyle{biedge'} = [bend right]
+\tikzstyle{edge_str8} = [->]
+\tikzstyle{biedge_str8} = []
+\tikzstyle{vertex} = [circle, minimum width=0.8cm, text centered, draw=black]
+\tikzstyle{mark_red} = [fill=red]
+\tikzstyle{mark_violet} = [fill={rgb:red,0.5;blue,0.5;white,1}]
+\tikzstyle{mark_grey} = [fill={rgb:black,1;white,3}]
 \tikzstyle{graph_small} = [rectangle, draw=black, inner sep=0.5cm]
 \tikzstyle{graph} = [rectangle, draw=black, inner sep=1cm]
 \tikzstyle{rule} = [rectangle, inner sep=1cm]
-\tikzstyle{derivation} = [-implies, double, thick]
+\tikzstyle{derivation} = [-implies, double, thick, double distance=1mm, shorten >=6pt, shorten <=6pt]
+\tikzstyle{code} = [font=\ttfamily]
 
 % ---------------
 % Listings Setup
@@ -38,21 +46,21 @@
 \usepackage{courier}
 
 \author{Huw Taylor}
-\title{Tracing GP2 Execution} %TODO ~AMMEND: is 'Execution' needed? Maybe just Tracing GP2?
+\title{Tracing \& Debugging GP2}
 \date{\today}
 \supervisor{Dr. Detlef Plump}
 \MEng
 %TODO ~CHECK: The word/page counts are up to date.
-\wordcount{6456}
-\pagecount{21}
+\wordcount{9183}
+\pagecount{27}
 % ~16000 words (55 pages) total
 \abstract{
 % ~66 words
 
 }
 \acknowledgements{
-I would like to thank Christopher Bak for his continued support throughout the project. His advice on the workings of the GP2 compiler has been invaluable.
-%TODO Thank Detlef for his faith in me.
+%I would like to thank Christopher Bak for his continued support throughout the project. His advice on the workings of the GP2 compiler has been invaluable.
+%I would also like to thank Detlef Plump for his faith in me.
 }
 
 \begin{document}
@@ -61,11 +69,11 @@ I would like to thank Christopher Bak for his continued support throughout the p
 \tableofcontents
 % \listoffigures
 
-
 \chapter{Introduction}
 \pagenumbering{arabic}
 % ~1333 words
 \section{Motivation}
+%TODO ~MENTION: debugging graph programs is tricky.
 %TODO ~ADD: some references for this stuff. I have them, just chuck in citations to papers I already got.
 GP is a graph programming language. It was developed to provide a language that is expressive enough to solve complex graph problems, while also having a simple enough syntax to allow for formal reasoning. Graphs and graph transformations have previously implemented in low-level languages, like C. This meant that it was more difficult to understand, verify, and implement \cite{gp_lang}. GP at its core has four commands that nevertheless allows every computable function on graphs to be implemented \cite{gp1}. These commands are a single application of a rule, sequential composition, loops, and branching. Loops are implemented in a run-for-as-long-as-possible style.
 
@@ -100,47 +108,61 @@ Graph theory is said to go back as far as the 1730s, with The K{\"o}nigsberg Bri
 
 The mathematical theory of Graph Transformation allows the transformation of graphs by way of rules. Rules are applied to graphs. They include a LHS (Left-Hand Side) graph, and RHS (Right-Hand Side) graph and an interface graph, which connects nodes in the LHS to nodes in the RHS. There is a convention that if the interface graph is ommited then it is inferred that it comprises the common labelled nodes in both the LHS and RHS.
 
-Rules can either use a single-pushout or a double-pushout approach. In GP, graph transformations use the double-pushout with relabelling \cite[p. 100]{gp1}. Matches of rules must be injective morphisms and are only vaild if they don't result in \emph{dangling edges}, that is, edges with one or more ends not attactched to a node. The interface graph of a rule may be partially labelled, but all other graphs must be totally labelled. A partially labelled graph is %TODO definition of partially labelled graphs
-, whereas a totally labelled graph is %TODO definiton of totally labelled graph
+Rules can either use a single-pushout or a double-pushout approach. In GP, graph transformations use the double-pushout with relabelling \cite[p. 100]{gp1}. Matches of rules must be injective morphisms and are only vaild if they don't result in \emph{dangling edges}, that is, edges with one or more ends not attactched to a node. The interface graph of a rule may be partially labelled, but all other graphs must be totally labelled. A partially labelled graph is a graph with a partial node-labelling function and a total edge-labelling function, whereas a totally labelled graph is where function mapping a label to every node is total.
 
 Figure \ref{fig:simple_rule} shows a simple rule that, given a non-empty host graph, creates a transitive graph, where every node with a directed path to another has a direct edge going to it. A directed path between two nodes \emph{A} and \emph{B} exists either if there is an outgoing edge from \emph{A} to \emph{B}, or for any of the nodes that have an incoming edge from \emph{A}, there is a directed path from it to \emph{B}.
 Figure \ref{fig:simple_rule_sans_k} shows the same rule without its interface graph.
 
 \input{rule_example}
 
-Rules are applied using % morphisms? Explain the morphism.
+Rules are applied using a left-hand side graph (LHS) and a right-hand side graph (RHS), where both the LHS and RHS are totally labelled graphs, and a partially labeled graph known as the interface. An application of a rule to a graph will remove the items found in the LHS and not the interface, and then add the items in the RHS not found in the interface, relabelling the nodes that are unlabelled in the interface \cite{gp_lang, gp2_design}. Figure \ref{fig:simple_rule_application} shows the application of the rule shown in figure \ref{fig:simple_rule_sans_k} on a host graph. Step 1 shows the matching of the LHS to the host graph. This match is chosen non-deterministically, and the other possibilities are shown as alternative matches. Step 2 shows the removal of the nodes and edges that are in the LHS and not in the Interface. Step 3 shows the addition of the nodes and edges that are in the RHS and not in the Interface. Step 3 would also be the step to add any labels to nodes, however, the nodes in the host graph and rules have empty labels. The colouring of the nodes is an illustration to draw your attention to the changes as is not a feature of the graph.
 
-%TODO ~ADD: "construction of rule application" how a rule works. 
-% Find the match
-	% LHS morphism onto graph?
-% apply the rule. 
-	% pushouts (double/single)
-	% label preserving, but can change them
-
-%TODO illustrate the process of a rule's application
 \input{rule_application}
 
 \subsection{Graph Programs}
-The University of York has developed a graph programming language \emph{"GP1"} \cite{gp1}, and has developed a new implementation \emph{"GP2"}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. 
+The University of York has developed a graph programming language \emph{"GP1"} \cite{gp1}, and has developed a new implementation \emph{"GP2"} \cite{gp2_design}. The goal of both of these has been to write programs that manipulate graphs in terms of the graphs, rather than in general purpose languages like C or Java. 
 
-Graph programming (GP) allows the application of programs to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{host graph}. The resulting graph is known as the \emph{result graph}. A simple program could just be the continued application of a single rule.
-%TODO ~ADD, ~REFERENCE: Greg Manning Paper
+Graph programming (GP) allows the application of programs to graphs. A program is made up of rules and rudimentary control structures, such as conditions, and loops. The rules are executed non-deterministically on a graph, known as the \emph{host graph}. The resulting graph is known as the \emph{result graph}. A simple program could just be the continued application of a single rule. 
 
-%TODO ~ADD describe constants of the language
-% Graph programs have macros, and rules, and if statements, try statements, and loops, and non-deterministic choosing between macros/rules.
-% The syntax is XYZ
-% Chris's Paper, page 41 has the abstract syntax of GP2 programs. Steal it! Steal iiiit!!
+Figure \ref{fig:simple_program} shows an example of a graph program using the GP2 syntax. The first two lines show the program's structure. It shows a procedure 'Traverse', which non-deterministically choses from the rule set containing the rules 'add' and 'reduce'. The main declaration runs the 'init' rule and then runes the 'Traverse' procedure for as long as posisble. The program assumes that the input graph has a single red node, and that none of the edge labels are negative numbers.
+
+The 'add' and 'reduce' rules make use of GP2 addition of marks. Violet matches are the special case whereby they can match any mark.
+
+GP also allows for if-then-else statements, whereby if a condition consisting of a rule set is succesfully applied, the graph \emph{before} the application of the condition has the 'then' branch executed on it. If the condition fails then the else branch is executed, also on the graph before the application of the condition. GP2 adds a try-then-else statement, which acts the same for the else branch, however on a successful application of the condition, the 'then' branch executes on the result of the condition.
+
+The table \ref{table:gp2_ast}, taken from \cite{chris_compiler}, shows the abstract syntax for GP2 programs. It doesn't include the syntax for rule and procedure identifiers, which are strings of alphanumeric characters, starting with a letter. Procedures must begin with an upper-case letter, and rules with a lower-case letter. Also, procedures cannot be recursive, and so by extension cannot call a procedure that calls itself \cite{chris_compiler}. Procedures can be thought of as similar to macros in other languages such as C, that is, its command sequence can be put inline in the place of the procedure with no change in the program.
+
+\begin{table}
+\begin{tabular}{l l l}
+Prog        & ::= & Decl \{ Decl \} \\
+Decl        & ::= & MainDecl | ProcDecl | RuleDecl \\
+MainDecl    & ::= & \texttt{main} '=' ComSeq \\
+ProcDecl    & ::= & ProcId '=' [ LocalDecl ] ComSeq \\
+LocalDecl   & ::= & ( RuleDecl | ProcDecl ) \{ LocalDecl \} \\
+ComSeq      & ::= & Com \{ ';' Com \} \\
+Com         & ::= & RuleSetCall | ProcCall \\
+            &     & | \texttt{if} ComSeq \texttt{then} ComSeq [\texttt{else} ComSeq] \\
+            &     & | \texttt{try} ComSeq \texttt{then} ComSeq [\texttt{else} ComSeq] \\
+            &     & | ComSeq '!' \\
+            &     & | ComSeq \texttt{or} ComSeq \\
+            &     & | '(' ComSeq ')' \\
+            &     & | \texttt{break} | \texttt{skip} | \texttt{fail} \\
+RuleSetCall & ::= & RuleId | '\{' [ RuleId \{ ',' RuleId \} ] '\}' \\
+ProcCall    & ::= & ProcId \\
+\end{tabular}
+\caption{Abstract Syntax Tree for a GP2 program}
+\label{table:gp2_ast}
+\end{table}
 
 %TODO ~ADD: more stuff about GP (page 18 on https://www.cs.york.ac.uk/ftpdir/reports/2007/YCST/15/YCST-2007-15.pdf (gp_lang) and page 1 on https://www.cs.york.ac.uk/plasma/publications/pdf/Plump.CAI.09.pdf (gp1))
 
-%TODO ~AMMEND: Make the code portion of this picture truetype
-%TODO ~AMMEND: Look at the GRAT slides and use the shortest distance program there (which uses GP2 stuff, rather than GP1 stuff) http://www-module.cs.york.ac.uk/grat/Lectures/VII.pdf page 35
 \input{simple_program_example}
 
 
-The program \ref{fig:simple_program} finds the shortest path to each node, using Dijkstra's algorithm for pathfinding. Running it on the host graph will give the intermediary graphs shown in \ref{fig:simple_program_example}.
+The program \ref{fig:simple_program} finds the shortest path to each node, using Dijkstra's algorithm for pathfinding. The procedure 'Traverse' isn't strictly necessary - it could be replaced with '\texttt{\{add, reduce\}}', but it serves to illustrate the syntax for procedures. 
 
-%TODO ~AMMEND: Use the ammended program to recreated the process. Also, add some more steps.
+Running this program on the host graph shown will give the intermediary graphs shown in figure \ref{fig:simple_program_example_1}. Since GP is non-deteministic, the figure shows only one of the many possible outcomes of applying this graph program.
+
 \input{simple_program_execution}
 
 \section{GP2 Compiler}
@@ -152,22 +174,46 @@ GP2 no longer enforces non-deterministic execution \cite[p. 15]{gp2_ide}, and do
 
 %TODO ~ADD: what GP2 adds (page 1 on https://www.cs.york.ac.uk/plasma/publications/pdf/Plump.WRS.11.pdf (gp2_design))
 
-The GP2 compiler parses the program and host graph files, and generates a C code representation of the program, which can then be run. It generates an abstract syntax tree for the program, and creates files for each rule, with methods for matching, and methods for applying. 
+The GP2 compiler parses the program and host graph files, and generates a C code representation of the program, which can then be run. It generates an abstract syntax tree for the program, and creates files for each rule, with methods for matching, and methods for applying. These files, along with the main file are stored in a specified output directory, or in \texttt{/tmp/} if none is given. The compiler hard-codes the location of the host graph into the generated runtime program.
 
 %TODO ~ADD: more detailed explanation of how the GP2 compiler works.
 
 \section{GP2 Editor}
-The GP2 graphical editor for creating graphs and graph programs is currently under development. It will allow for the creation of graphs graphically, rather than textually, and it will allow for the creation of programs textually, and their rules graphically, assigning the LHS and RHS of the rules. In contrast with the GP1 editor, the GP2 editor will also include functionality to display nodes and edges in accordance with their marks.
-% It has a tab for creating programs, which includes a rudimentary text editor.
-% It has a tab for creating rules.
-% It has a tab for creating graphs.
-% It has a tab for running programs on graphs.
-%TODO ~CHECK: the above statements.
+The GP2 graphical editor for creating graphs and graph programs is currently under development. It will allow for the creation of graphs graphically, rather than textually, and it will allow for the creation of programs textually, and their rules graphically, assigning the LHS and RHS of the rules. In contrast with the GP1 editor, the GP2 editor will also include functionality to display nodes and edges in accordance with their marks. It has several tabs. The first simply contains a welcome message for the user, but the 'Edit' tab allows for the user to create and edit graphs, rules and programs. The 'Run' tab simply allows the user to choose a host graph and a graph program and runs the program on the graph. The 'Results' tab shows the resultant graph.
 
-%TODO ~ADD: a screenshot
+\begin{figure}
+\label{img:editor_graph}
 \includegraphics[width=\textwidth]{editor_graph}
+\caption{The GP2 Editor's Edit Graph View}
+\end{figure}
 
-%TODO ~MENTION: that the editor has added positions to nodes in the lexer, and the parser ignores them.
+Figure \ref{img:editor_graph} shows the graph editor. It allows users to create nodes and edges, and edit their labels and marks. It can open graph files, but only if they have the correct filetype (\texttt{.host}). You can navigate through large graphs by zooming and panning.
+
+\begin{figure}
+\label{img:editor_rule}
+\includegraphics[width=\textwidth]{editor_rule}
+\caption{The GP2 Editor's Edit Rule View}
+\end{figure}
+
+Figure \ref{img:editor_rule} shows the rule editor. It has two small panes that function similar to the graph editor, and has a textbox for rule conditions. Rules can currently not be removed from a project.
+
+\begin{figure}
+\label{img:editor_program}
+\includegraphics[width=\textwidth]{editor_program}
+\caption{The GP2 Editor's Edit Program View}
+\end{figure}
+
+Figure \ref{img:editor_program} shows the program editor. It is a simple text editor featuring syntax highlighting.
+
+\begin{figure}
+\label{img:editor_result}
+\includegraphics[width=\textwidth]{editor_result}
+\caption{The GP2 Editor's Results Tab}
+\end{figure}
+
+Figure \ref{img:editor_result} shows the resultant graph. You can navigate it by zooming and panning in the same way as the graph editor.
+
+The editor reads the positions of nodes from the graph's file. Positions were added to the GP2 lexer for this very purpose, and the parser simply ignores them. This allows the editor to maintain structural consistency with the graphs. This is a simple technique that is appropriate for this purpose, but cannot be overused, as this would severly complicate the lexing of GP2 programs and graphs.
 
 \section{Program Tracing}
 There are several techniques available to software developers when attempting to track down the locations of errors they've made. This process is called debugging, and many of the techniques involve outputting information about the program and its state throughout its execution. Other techniques involve dumping the last-stable memory at the point of a program crashing, which will then be analysed. 
@@ -176,9 +222,9 @@ There are several techniques available to software developers when attempting to
 Tracing through the steps of a program has been around since programs themselves. The BASIC programming language had a command \emph{TRON}, short for TRace ON, which print the line numbers of each command as the program ran. 
 Tracing allows programmers to ensure that each step is procuding the right results and allows a more detailed insight into the workings of a program. This is done by logging information about the execution of a program that will be useful for debugging or diagnostics, formal methods of which have been discussed as far back as the 70s \cite{psych_debug, code_walkthroughs}.
 
-Although tracing, when as simple as possible, can be merely the addition of a few print statements, when applied throughout a program as a debugging tool, because tracing is generally such a low-level process, there's potential for a vast amount of logging messages \cite{}, which can impact performance. Usually programs have either run-time or compile-time options for turning off debugging to combat this. %TODO ~FIND: a paper or reference for the empty citation.
+Although tracing, when as simple as possible, can be merely the addition of a few print statements, when applied throughout a program as a debugging tool, because tracing is generally such a low-level process, there's potential for a vast amount of logging messages \cite{tracing_book}, which can impact performance. Usually programs have either run-time or compile-time options for turning off debugging to combat this. %TODO ~FIND: a paper or reference for the empty citation.
 
-The trace is also usually only seen by the developer of a system, and so there is no need to have the messages be readable by, or understandable to, the users. This means it can be cheap to implement. However, due to the fact that tracing is a cross-cutting concern \cite{}, meaning that is is involved all throughout the program, it's difficult to decouple and modularise. %TODO ~FIND: a paper or reference for the empty citation.
+The trace is also usually only seen by the developer of a system, and so there is no need to have the messages be readable by, or understandable to, the users. This means it can be cheap to implement. However, due to the fact that tracing is a cross-cutting concern \cite{wiki_tracing}, meaning that is is involved all throughout the program, it's difficult to decouple and modularise. %TODO ~FIND: a paper or reference for the empty citation.
 
 The points within the program where information is divulged are referred to as tracepoints. They are hooking mechanisms which allow for tracing with little overhead when disabled, but that can be enabled at run-time and will provide static tracing \cite{tracing_book}.
 
@@ -188,10 +234,6 @@ Breakpoints allow for the stopping or pausing of a program part of the way throu
 %TODO ~FIND: some papers on debugging
 %TODO ~READ: psych_debug and code_walkthroughs for stuff to say about tracing/debugging
 %TODO ~READ: https://bitbucket.org/pypy/extradoc/src/tip/talk/pepm2011/bolz-allocation-removal.pdf (reference #16 might be good)
-
-%TODO ~FIND, ~MENTION: a paper on TRON and mention it briefly.
-
-% END OF LITERATURE REVIEW
 
 \chapter{Design}
 \section{Users \& Requirements} %TODO ~AMMEND: Maybe call this Problem Analysis?
@@ -371,13 +413,6 @@ Maintainability is a property of software which equates to how easily modified i
 
 This project ensures a high level of maintainability %TODO ~ADD THIS
 
-%
-% A program must be able to be stepped through, that is, a portion of the program (step) must be able to be run on either the host graph, or the resultant graph of a previous step's execution.
-% These steps would ideally be of specifiable sizes.
-% These steps must be able to be displayed graphically in the GP2 Editor.
-% These steps would ideally be displayed in such a way to highlight any changes made in a step.
-%
-
 The necessary functionality of the system is defined in the requirements. The first of these requirements is that the system allows the user to step through a portion of the graph program. The second requirement is that these steps be of a specified size with respect to the graph program. The third requirement is that these steps must be made available to external programs, including the GP2 Editor. The fourth and fifth are that any changes made during these steps must also be made available to external programs, with the GP2 Editor in particular recognising the changes and displaying them to the user.
 
 To address these problems, additional features were added to allow the generated runtime program to step through a compiled graph program. 
@@ -398,14 +433,18 @@ For users of the GP2 compiler, all the functionality of stepping through a graph
 
 So as to make sure that the additions of tracing to both the compiler and the generated runtime code did not affect performance too severly, I compared the execution of various graph programs with and without tracing. This is comparing the latest GP2 compiler and its generated code without any of the added implemented features outlined in this thesis, with the final system implemented as part of this project. Table \ref{table:compilation_timings} shows the comparisons of the timings taken to compile the graph program with and without tracing. Table \ref{table:whole_execution_timings} shows the timings taken to run the entirety of a graph program with the extra tracing code, and compares it to the time taken without.
 
+%0.002972
+%0.002632
+
 %TODO ~ADD: numbers to these tables. :D
 \begin{table}
 \centering
 \begin{tabular}{p{4cm} | l | l | l}
 	Graph Program & \# of Rules & Time w/o Tracing & Time w/ Tracing \\ 
 	\hline
-	2 colouring & 5 & ???? & 0.002972 \\
-	Dijkstra's shortest path & 3 & ???? & 0.002632 \\
+	2 colouring & 5 & ???? & ???? \\
+	Dijkstra's shortest path & 3 & ???? & ???? \\
+	Acyclic Graph & 5 & ???? & ???? \\
 	%TODO ~ADD: ADD "data"
 \end{tabular}
 \caption{Compilation Timing Comparisons}
@@ -419,6 +458,8 @@ So as to make sure that the additions of tracing to both the compiler and the ge
 	\hline
 	2 colouring & 100 & ???? & ???? \\
 	Dijkstra's shortest path & 6 & ???? & ???? \\
+	Acyclic Graph & 5 & ???? & ???? \\
+	Acyclic Graph & 6 & ???? & ???? \\
 	%TODO ~ADD: ADD "data"	
 \end{tabular}
 \caption{Compilation Timing Comparisons}
@@ -439,14 +480,24 @@ So as to make sure that the additions of tracing to both the compiler and the ge
 \chapter{Conclusion}
 % ~1333 words
 
+Overall this project has been a success, though not without any outstanding issues. Allowing users to access the intermediate steps of a graph program affords them new ways to debug their graph program, and by allowing the runtime code to accept arguments, this allows for greater separation between the compile step and the runtime step. This is a step in the right direction for decoupling the overall GP2 process and for improving the modularity of its components.
+
+Because the runtime code now accepts arguments, this means that potentially in the future, the user could specify the output directory at runtime rather than compile time. The user could also specify that they want the output graph to be a new file, and not overwrite the existing one. These simple changes allow the user to save all the graphs resulting in tracing a graph program to a specified directory, so that they can browse the steps and note any changes themselves or, in the future, potentially with any additional graph visualisation tools that are created. These changes, along with any other runtime arguments or configurations, also justify the design decision in the GP2 editor to have an entire tab for runtime configurations of a graph program, as before this project, there were no settings to change, and the only two parameters, the graph program and the host graph are actually used by the compiler.
+
+
+
 % Say what you did. Say whether you done good.
 % Outstanding problems.
 	% not the best way of finding changes to highlight them.
+	
+% How I've improved the field
 
 \section{Future Work}
 
 % Having the Graphical Editor recognise the special labels and draw attention to changes is the obvious immediate next thing to do.
 % Stepping backwards? Would be a challenge.
+
+% Having intermediate graphs saved somewhere else? Maybe iff the user specifies a location.
 
 % Better step sizes, with procedures each having their own step size.
 

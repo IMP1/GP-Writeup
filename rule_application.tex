@@ -1,13 +1,117 @@
 \begin{figure}
 \label{fig:simple_rule_application}
 \centering
-\begin{tikzpicture}[scale=2]
-  \node (n1) [vertex, label=below:{1}] at (0, 0) {};
-  \node (n2) [vertex, label=below:{2}] at (0.5, 0) {};
-  \node (n3) [vertex, label=below:{3}] at (1, 0) {};
-  \path [edge] (n1) edge node {} (n2);
-  \path [edge] (n2) edge node {} (n3);
-  \node (l) [graph_small, fit={(n1) (n2) (n3)}, label=below:{}] {};
+\begin{tikzpicture}[scale=2, y=-1cm]
+  \begin{scope}
+    \node (n1) [vertex, label=below left:{1}] at (0, 0) {};
+    \node (n2) [vertex, label=below:{2}] at (0.5, 0.5) {};
+    \node (n3) [vertex, label=below:{3}] at (1, 0) {};
+    \node (n4) [vertex, label=below:{4}] at (0, 1) {};
+    \node (n5) [vertex, label=below:{5}] at (1, 1) {};
+    \node (n6) [vertex, label=below:{6}] at (1.5, 0.5) {};
+    \node (n7) [vertex, label=below:{7}] at (2, 0) {};  
+    \path [edge_str8] (n1) edge node {} (n2);
+    \path [edge_str8] (n1) edge node {} (n4);
+    \path [edge_str8] (n1) edge node {} (n3);    
+    \path [edge_str8] (n2) edge node {} (n5);  
+    \path [edge_str8] (n3) edge node {} (n6);  
+    \path [edge_str8] (n5) edge node {} (n6);
+    \path [edge_str8] (n7) edge node {} (n6);
+    \node (host_graph) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6) (n7)}, label=below:{0. Host Graph}] {};
+  \end{scope}
+  
+  \begin{scope}[yshift=-3cm]
+	\node (n1) [vertex, label=below left:{1}] at (0, 0) {};
+  	\node (n2) [vertex, label=below:{2}, draw=blue] at (0.5, 0.5) {};
+  	\node (n3) [vertex, label=below:{3}] at (1, 0) {};
+ 	\node (n4) [vertex, label=below:{4}] at (0, 1) {};
+ 	\node (n5) [vertex, label=below:{5}, draw=blue] at (1, 1) {};
+ 	\node (n6) [vertex, label=below:{6}, draw=blue] at (1.5, 0.5) {};
+ 	\node (n7) [vertex, label=below:{7}] at (2, 0) {};  
+  	\path [edge_str8] (n1) edge node {} (n2);
+    \path [edge_str8] (n1) edge node {} (n4);
+    \path [edge_str8] (n1) edge node {} (n3);    
+    \path [edge_str8, draw=blue] (n2) edge node {} (n5);  
+    \path [edge_str8] (n3) edge node {} (n6);  
+    \path [edge_str8, draw=blue] (n5) edge node {} (n6);
+    \path [edge_str8] (n7) edge node {} (n6);
+    \node (match) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6) (n7)}, label=below:{1. LHS Matching}] {};
+  \end{scope}
+  
+  \begin{scope}[yshift=-6cm]
+	\node (n1) [vertex, label=below left:{1}] at (0, 0) {};
+  	\node (n2) [vertex, label=below:{2}, draw=red] at (0.5, 0.5) {};
+  	\node (n3) [vertex, label=below:{3}] at (1, 0) {};
+ 	\node (n4) [vertex, label=below:{4}] at (0, 1) {};
+ 	\node (n5) [vertex, label=below:{5}, draw=red] at (1, 1) {};
+ 	\node (n6) [vertex, label=below:{6}, draw=red] at (1.5, 0.5) {};
+ 	\node (n7) [vertex, label=below:{7}] at (2, 0) {};  
+  	\path [edge_str8] (n1) edge node {} (n2);
+    \path [edge_str8] (n1) edge node {} (n4);
+    \path [edge_str8] (n1) edge node {} (n3);
+    \path [edge_str8] (n3) edge node {} (n6);  
+    \path [edge_str8] (n7) edge node {} (n6);
+    \node (remove) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6) (n7)}, label=below:{2. Removal of (LHS - Interface)}] {};
+  \end{scope}
+  
+  \begin{scope}[yshift=-9cm]
+	\node (n1) [vertex, label=below left:{1}] at (0, 0) {};
+  	\node (n2) [vertex, label=below:{2}, draw=blue] at (0.5, 0.5) {};
+  	\node (n3) [vertex, label=below:{3}] at (1, 0) {};
+ 	\node (n4) [vertex, label=below:{4}] at (0, 1) {};
+ 	\node (n5) [vertex, label=below:{5}, draw=blue] at (1, 1) {};
+ 	\node (n6) [vertex, label=below:{6}, draw=blue] at (1.5, 0.5) {};
+ 	\node (n7) [vertex, label=below:{7}] at (2, 0) {};  
+  	\path [edge_str8] (n1) edge node {} (n2);
+    \path [edge_str8] (n1) edge node {} (n4);
+    \path [edge_str8] (n1) edge node {} (n3);    
+    \path [edge_str8, draw=blue] (n2) edge node {} (n5);  
+    \path [edge_str8] (n3) edge node {} (n6);  
+    \path [edge_str8, draw=blue] (n5) edge node {} (n6);
+    \path [edge_str8] (n7) edge node {} (n6);
+    \path [edge_str8, draw=blue] (n2) edge node {} (n6);
+    \node (add) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6) (n7)}, label=below:{3. Addition of (RHS - Interface)}] {};
+  \end{scope}
+  
+  \begin{scope}[xshift=4cm]
+  \begin{scope}[yshift=-1.5cm]
+	\node (n1) [vertex, label=below left:{1}, draw=blue] at (0, 0) {};
+  	\node (n2) [vertex, label=below:{2}, draw=blue] at (0.5, 0.5) {};
+  	\node (n3) [vertex, label=below:{3}] at (1, 0) {};
+ 	\node (n4) [vertex, label=below:{4}] at (0, 1) {};
+ 	\node (n5) [vertex, label=below:{5}, draw=blue] at (1, 1) {};
+ 	\node (n6) [vertex, label=below:{6}] at (1.5, 0.5) {};
+ 	\node (n7) [vertex, label=below:{7}] at (2, 0) {};  
+  	\path [edge_str8, draw=blue] (n1) edge node {} (n2);
+    \path [edge_str8] (n1) edge node {} (n4);
+    \path [edge_str8] (n1) edge node {} (n3);    
+    \path [edge_str8, draw=blue] (n2) edge node {} (n5);  
+    \path [edge_str8] (n3) edge node {} (n6);  
+    \path [edge_str8] (n5) edge node {} (n6);
+    \path [edge_str8] (n7) edge node {} (n6);
+    \node (match_1) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6) (n7)}, label=below:{}] {};
+  \end{scope}
+  \begin{scope}[yshift=-4.5cm]
+	\node (n1) [vertex, label=below left:{1}, draw=blue] at (0, 0) {};
+  	\node (n2) [vertex, label=below:{2}] at (0.5, 0.5) {};
+  	\node (n3) [vertex, label=below:{3}, draw=blue] at (1, 0) {};
+ 	\node (n4) [vertex, label=below:{4}] at (0, 1) {};
+ 	\node (n5) [vertex, label=below:{5}] at (1, 1) {};
+ 	\node (n6) [vertex, label=below:{6}, draw=blue] at (1.5, 0.5) {};
+ 	\node (n7) [vertex, label=below:{7}] at (2, 0) {};  
+  	\path [edge_str8] (n1) edge node {} (n2);
+    \path [edge_str8] (n1) edge node {} (n4);
+    \path [edge_str8, draw=blue] (n1) edge node {} (n3);    
+    \path [edge_str8] (n2) edge node {} (n5);  
+    \path [edge_str8, draw=blue] (n3) edge node {} (n6);  
+    \path [edge_str8] (n5) edge node {} (n6);
+    \path [edge_str8] (n7) edge node {} (n6);
+    \node (match_2) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6) (n7)}, label=below:{}] {};
+  \end{scope}
+  \node (alt_match) [fit={(match_1) (match_2)}, label=below:{Alternative Matches}] {};
+  \draw [decorate, decoration={brace, amplitude=10pt, mirror}] (-0.8, 0.5) -- (-0.8, 6.5) {};
+  \end{scope}
+  
 \end{tikzpicture}
 \caption{Rule Example}
 \end{figure}

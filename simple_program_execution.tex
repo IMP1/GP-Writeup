@@ -1,66 +1,218 @@
-\newgeometry{left=1cm,bottom=0.1cm}
+\newgeometry{left=0.5cm,bottom=0.1cm}
 
 \begin{figure}
-\label{fig:simple_program_example}
+\label{fig:simple_program_example_1}
 \centering
-%TODO ~CHECK: Make sure this displays how it should.
-%TODO ~ADD: Colour to illustrate changes?
-\begin{tikzpicture}[scale=2]
-  \node (n1_1) [vertex] at (0, 4) {$1\_0$};
-  \node (n1_2) [vertex] at (1, 4) {2};
-  \node (n1_3) [vertex] at (1, 5) {3};
-  \node (n1_4) [vertex] at (1, 6) {4};
-  \node (n1_5) [vertex] at (2, 4) {5};
-  \path [edge] (n1_1) edge node[label=above:{4}] {} (n1_2);
-  \path [edge] (n1_1) edge node[label=above:{6}] {} (n1_3);
-  \path [edge] (n1_2) edge node[label=above:{1}] {} (n1_3);
-  \path [edge] (n1_3) edge node[label=above:{2}] {} (n1_4);
-  \path [edge] (n1_2) edge node[label=above:{6}] {} (n1_5);
-  \path [edge] (n1_3) edge node[label=above:{4}] {} (n1_5);
-  \path [edge] (n1_4) edge node[label=above:{1}] {} (n1_5);
-  \node (g0) [rule, fit={(n1_1) (n1_2) (n1_3) (n1_4) (n1_5)}, label=below:{Host Graph}] {};
+\begin{tikzpicture}[scale=1.8, y=-1cm]
+  \begin{scope}
+    \node (n1) [vertex] at (0.5, 0.5) {};
+    \node (n2) [vertex] at (2, 0) {};
+    \node (n3) [vertex, mark_red] at (1, 1) {};
+    \node (n4) [vertex] at (3, 0.5) {};
+    \node (n5) [vertex] at (0, 2) {};
+    \node (n6) [vertex] at (1.5, 2.5) {};
+    \path [biedge] (n1) edge node[label=above:{1}] {} (n2);
+    \path [biedge] (n2) edge node[label=above:{2}] {} (n4);
+    \path [biedge] (n4) edge node[label=above:{6}] {} (n6);
+    \path [biedge] (n6) edge node[label=above:{2}] {} (n5);
+    \path [biedge] (n5) edge node[label=above:{3}] {} (n1);
+    \path [biedge'] (n1) edge node[label=below:{2}] {} (n3);
+    \path [biedge'] (n3) edge node[label=below:{5}] {} (n2);
+    \path [biedge] (n3) edge node[label=right:{5}] {} (n6);
+    \node (host) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6)}, label=below:{0. Host Graph}] {};    
+  \end{scope}
   
-  \node (n2_1) [vertex] at (5, 4) {$1\_0$}; % probably have to change these coordinates.
-  \node (n2_2) [vertex] at (6, 4) {$2\_4$};
-  \node (n2_3) [vertex] at (6, 5) {3};
-  \node (n2_4) [vertex] at (6, 6) {4};
-  \node (n2_5) [vertex] at (7, 5) {5};
-  \path [edge] (n2_1) edge node[label=above:{4}] {} (n2_2);
-  \path [edge] (n2_1) edge node[label=above:{6}] {} (n2_3);
-  \path [edge] (n2_2) edge node[label=above:{1}] {} (n2_3);
-  \path [edge] (n2_3) edge node[label=above:{2}] {} (n2_4);
-  \path [edge] (n2_2) edge node[label=above:{6}] {} (n2_5);
-  \path [edge] (n2_3) edge node[label=above:{4}] {} (n2_5);
-  \path [edge] (n2_4) edge node[label=above:{1}] {} (n2_5);
-  \node (g1) [rule, fit={(n2_1) (n2_2) (n2_3) (n2_4) (n2_5)}, label=below:{Graph after one application of InitTags}] {};
+  \begin{scope}[xshift=5cm]
+    \node (n1) [vertex] at (0.5, 0.5) {};
+    \node (n2) [vertex] at (2, 0) {};
+    \node (n3) [vertex, mark_red] at (1, 1) {0};
+    \node (n4) [vertex] at (3, 0.5) {};
+    \node (n5) [vertex] at (0, 2) {};
+    \node (n6) [vertex] at (1.5, 2.5) {};
+    \path [biedge] (n1) edge node[label=above:{1}] {} (n2);
+    \path [biedge] (n2) edge node[label=above:{2}] {} (n4);
+    \path [biedge] (n4) edge node[label=above:{6}] {} (n6);
+    \path [biedge] (n6) edge node[label=above:{2}] {} (n5);
+    \path [biedge] (n5) edge node[label=above:{3}] {} (n1);
+    \path [biedge'] (n1) edge node[label=below:{2}] {} (n3);
+    \path [biedge'] (n3) edge node[label=below:{5}] {} (n2);
+    \path [biedge] (n3) edge node[label=right:{5}] {} (n6);
+    \node (host) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6)}, label=below:{1. After 'init'}] {};  
+  \end{scope}
   
-  \node (n3_1) [vertex] at (0, 0) {$1\_0$}; % probably have to change these coordinates.
-  \node (n3_2) [vertex] at (1, 0) {$2\_4$};
-  \node (n3_3) [vertex] at (1, 1) {$3\_6$};
-  \node (n3_4) [vertex] at (1, 2) {$4\_8$};
-  \node (n3_5) [vertex] at (2, 1) {$5\_10$};
-  \path [edge] (n3_1) edge node[label=above:{4}] {} (n3_2);
-  \path [edge] (n3_1) edge node[label=above:{6}] {} (n3_3);
-  \path [edge] (n3_2) edge node[label=above:{1}] {} (n3_3);
-  \path [edge] (n3_3) edge node[label=above:{2}] {} (n3_4);
-  \path [edge] (n3_2) edge node[label=above:{6}] {} (n3_5);
-  \path [edge] (n3_3) edge node[label=above:{4}] {} (n3_5);
-  \path [edge] (n3_4) edge node[label=above:{1}] {} (n3_5);
-  \node (gx) [rule, fit={(n3_1) (n3_2) (n3_3) (n3_4) (n3_5)}, label=below:{Graph after all possible applications of InitTags}] {}; 
+  \begin{scope}[yshift=-4.5cm]
+    \node (n1) [vertex] at (0.5, 0.5) {};
+    \node (n2) [vertex, mark_grey] at (2, 0) {5};
+    \node (n3) [vertex, mark_red] at (1, 1) {0};
+    \node (n4) [vertex] at (3, 0.5) {};
+    \node (n5) [vertex] at (0, 2) {};
+    \node (n6) [vertex] at (1.5, 2.5) {};
+    \path [biedge] (n1) edge node[label=above:{1}] {} (n2);
+    \path [biedge] (n2) edge node[label=above:{2}] {} (n4);
+    \path [biedge] (n4) edge node[label=above:{6}] {} (n6);
+    \path [biedge] (n6) edge node[label=above:{2}] {} (n5);
+    \path [biedge] (n5) edge node[label=above:{3}] {} (n1);
+    \path [biedge'] (n1) edge node[label=below:{2}] {} (n3);
+    \path [biedge'] (n3) edge node[label=below:{5}] {} (n2);
+    \path [biedge] (n3) edge node[label=right:{5}] {} (n6);
+    \node (host) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6)}, label=below:{2. After an Application of 'add'}] {};  
+  \end{scope}
   
-  \node (n4_1) [vertex] at (5, 0) {$1\_0$}; % probably have to change these coordinates.
-  \node (n4_2) [vertex] at (6, 0) {$2\_4$};
-  \node (n4_3) [vertex] at (6, 1) {$3\_5$};
-  \node (n4_4) [vertex] at (6, 2) {$4\_7$};
-  \node (n4_5) [vertex] at (7, 1) {$5\_8$};
-  \path [edge] (n4_1) edge node[label=above:{4}] {} (n4_2);
-  \path [edge] (n4_1) edge node[label=above:{6}] {} (n4_3);
-  \path [edge] (n4_2) edge node[label=above:{1}] {} (n4_3);
-  \path [edge] (n4_3) edge node[label=above:{2}] {} (n4_4);
-  \path [edge] (n4_2) edge node[label=above:{6}] {} (n4_5);
-  \path [edge] (n4_3) edge node[label=above:{4}] {} (n4_5);
-  \path [edge] (n4_4) edge node[label=above:{1}] {} (n4_5);
-  \node (gn) [rule, fit={(n4_1) (n4_2) (n4_3) (n4_4) (n4_5)}, label=below:{Graph after all possible applications of Reduce}] {}; 
+  \begin{scope}[xshift=5cm, yshift=-4.5cm]
+    \node (n1) [vertex, mark_grey] at (0.5, 0.5) {2};
+    \node (n2) [vertex, mark_grey] at (2, 0) {5};
+    \node (n3) [vertex, mark_red] at (1, 1) {0};
+    \node (n4) [vertex] at (3, 0.5) {};
+    \node (n5) [vertex] at (0, 2) {};
+    \node (n6) [vertex] at (1.5, 2.5) {};
+    \path [biedge] (n1) edge node[label=above:{1}] {} (n2);
+    \path [biedge] (n2) edge node[label=above:{2}] {} (n4);
+    \path [biedge] (n4) edge node[label=above:{6}] {} (n6);
+    \path [biedge] (n6) edge node[label=above:{2}] {} (n5);
+    \path [biedge] (n5) edge node[label=above:{3}] {} (n1);
+    \path [biedge'] (n1) edge node[label=below:{2}] {} (n3);
+    \path [biedge'] (n3) edge node[label=below:{5}] {} (n2);
+    \path [biedge] (n3) edge node[label=right:{5}] {} (n6);
+    \node (host) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6)}, label=below:{3. After an Application of 'add'}] {};  
+  \end{scope}
+
+  \begin{scope}[xshift=0cm, yshift=-9cm]
+    \node (n1) [vertex, mark_grey] at (0.5, 0.5) {2};
+    \node (n2) [vertex, mark_grey] at (2, 0) {3};
+    \node (n3) [vertex, mark_red] at (1, 1) {0};
+    \node (n4) [vertex] at (3, 0.5) {};
+    \node (n5) [vertex] at (0, 2) {};
+    \node (n6) [vertex] at (1.5, 2.5) {};
+    \path [biedge] (n1) edge node[label=above:{1}] {} (n2);
+    \path [biedge] (n2) edge node[label=above:{2}] {} (n4);
+    \path [biedge] (n4) edge node[label=above:{6}] {} (n6);
+    \path [biedge] (n6) edge node[label=above:{2}] {} (n5);
+    \path [biedge] (n5) edge node[label=above:{3}] {} (n1);
+    \path [biedge'] (n1) edge node[label=below:{2}] {} (n3);
+    \path [biedge'] (n3) edge node[label=below:{5}] {} (n2);
+    \path [biedge] (n3) edge node[label=right:{5}] {} (n6);
+    \node (host) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6)}, label=below:{4. After an Application of 'reduce'}] {};  
+  \end{scope}
+  
+  \begin{scope}[xshift=5cm, yshift=-9cm]
+    \node (n1) [vertex, mark_grey] at (0.5, 0.5) {2};
+    \node (n2) [vertex, mark_grey] at (2, 0) {3};
+    \node (n3) [vertex, mark_red] at (1, 1) {0};
+    \node (n4) [vertex, mark_grey] at (3, 0.5) {5};
+    \node (n5) [vertex] at (0, 2) {};
+    \node (n6) [vertex] at (1.5, 2.5) {};
+    \path [biedge] (n1) edge node[label=above:{1}] {} (n2);
+    \path [biedge] (n2) edge node[label=above:{2}] {} (n4);
+    \path [biedge] (n4) edge node[label=above:{6}] {} (n6);
+    \path [biedge] (n6) edge node[label=above:{2}] {} (n5);
+    \path [biedge] (n5) edge node[label=above:{3}] {} (n1);
+    \path [biedge'] (n1) edge node[label=below:{2}] {} (n3);
+    \path [biedge'] (n3) edge node[label=below:{5}] {} (n2);
+    \path [biedge] (n3) edge node[label=right:{5}] {} (n6);
+    \node (host) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6)}, label=below:{5. After an Application of 'add'}] {};  
+  \end{scope}
+  
+\end{tikzpicture}
+
+\caption{Simple Dijkstra Program Example}
+\end{figure}
+
+\setcounter{figure}{4} %TODO ~CHECK: This is one less than the above figure's caption number.
+
+\begin{figure}
+\label{fig:simple_program_example_2}
+\centering
+
+\begin{tikzpicture}[scale=1.8, y=-1cm]
+  \begin{scope}[xshift=0 cm, yshift=0cm]
+    \node (n1) [vertex, mark_grey] at (0.5, 0.5) {2};
+    \node (n2) [vertex, mark_grey] at (2, 0) {3};
+    \node (n3) [vertex, mark_red] at (1, 1) {0};
+    \node (n4) [vertex, mark_grey] at (3, 0.5) {5};
+    \node (n5) [vertex] at (0, 2) {};
+    \node (n6) [vertex, mark_grey] at (1.5, 2.5) {11};
+    \path [biedge] (n1) edge node[label=above:{1}] {} (n2);
+    \path [biedge] (n2) edge node[label=above:{2}] {} (n4);
+    \path [biedge] (n4) edge node[label=above:{6}] {} (n6);
+    \path [biedge] (n6) edge node[label=above:{2}] {} (n5);
+    \path [biedge] (n5) edge node[label=above:{3}] {} (n1);
+    \path [biedge'] (n1) edge node[label=below:{2}] {} (n3);
+    \path [biedge'] (n3) edge node[label=below:{5}] {} (n2);
+    \path [biedge] (n3) edge node[label=right:{5}] {} (n6);
+    \node (host) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6)}, label=below:{6. After an Application of 'add'}] {};  
+  \end{scope}
+  
+  \begin{scope}[xshift=5cm, yshift=0cm]
+    \node (n1) [vertex, mark_grey] at (0.5, 0.5) {2};
+    \node (n2) [vertex, mark_grey] at (2, 0) {3};
+    \node (n3) [vertex, mark_red] at (1, 1) {0};
+    \node (n4) [vertex, mark_grey] at (3, 0.5) {5};
+    \node (n5) [vertex, mark_grey] at (0, 2) {13};
+    \node (n6) [vertex, mark_grey] at (1.5, 2.5) {11};
+    \path [biedge] (n1) edge node[label=above:{1}] {} (n2);
+    \path [biedge] (n2) edge node[label=above:{2}] {} (n4);
+    \path [biedge] (n4) edge node[label=above:{6}] {} (n6);
+    \path [biedge] (n6) edge node[label=above:{2}] {} (n5);
+    \path [biedge] (n5) edge node[label=above:{3}] {} (n1);
+    \path [biedge'] (n1) edge node[label=below:{2}] {} (n3);
+    \path [biedge'] (n3) edge node[label=below:{5}] {} (n2);
+    \path [biedge] (n3) edge node[label=right:{5}] {} (n6);
+    \node (host) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6)}, label=below:{7. After an Application of 'add'}] {};  
+  \end{scope}
+  
+  \begin{scope}[xshift=0cm, yshift=-4.5cm]
+    \node (n1) [vertex, mark_grey] at (0.5, 0.5) {2};
+    \node (n2) [vertex, mark_grey] at (2, 0) {3};
+    \node (n3) [vertex, mark_red] at (1, 1) {0};
+    \node (n4) [vertex, mark_grey] at (3, 0.5) {5};
+    \node (n5) [vertex, mark_grey] at (0, 2) {5};
+    \node (n6) [vertex, mark_grey] at (1.5, 2.5) {11};
+    \path [biedge] (n1) edge node[label=above:{1}] {} (n2);
+    \path [biedge] (n2) edge node[label=above:{2}] {} (n4);
+    \path [biedge] (n4) edge node[label=above:{6}] {} (n6);
+    \path [biedge] (n6) edge node[label=above:{2}] {} (n5);
+    \path [biedge] (n5) edge node[label=above:{3}] {} (n1);
+    \path [biedge'] (n1) edge node[label=below:{2}] {} (n3);
+    \path [biedge'] (n3) edge node[label=below:{5}] {} (n2);
+    \path [biedge] (n3) edge node[label=right:{5}] {} (n6);
+    \node (host) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6)}, label=below:{8. After an Application of 'reduce'}] {};  
+  \end{scope}
+  
+  \begin{scope}[xshift=5cm, yshift=-4.5cm]
+    \node (n1) [vertex, mark_grey] at (0.5, 0.5) {2};
+    \node (n2) [vertex, mark_grey] at (2, 0) {3};
+    \node (n3) [vertex, mark_red] at (1, 1) {0};
+    \node (n4) [vertex, mark_grey] at (3, 0.5) {5};
+    \node (n5) [vertex, mark_grey] at (0, 2) {5};
+    \node (n6) [vertex, mark_grey] at (1.5, 2.5) {7};
+    \path [biedge] (n1) edge node[label=above:{1}] {} (n2);
+    \path [biedge] (n2) edge node[label=above:{2}] {} (n4);
+    \path [biedge] (n4) edge node[label=above:{6}] {} (n6);
+    \path [biedge] (n6) edge node[label=above:{2}] {} (n5);
+    \path [biedge] (n5) edge node[label=above:{3}] {} (n1);
+    \path [biedge'] (n1) edge node[label=below:{2}] {} (n3);
+    \path [biedge'] (n3) edge node[label=below:{5}] {} (n2);
+    \path [biedge] (n3) edge node[label=right:{5}] {} (n6);
+    \node (host) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6)}, label=below:{9. After an Application of 'reduce'}] {};  
+  \end{scope}
+  
+  \begin{scope}[xshift=0cm, yshift=-9cm]
+    \node (n1) [vertex, mark_grey] at (0.5, 0.5) {2};
+    \node (n2) [vertex, mark_grey] at (2, 0) {3};
+    \node (n3) [vertex, mark_red] at (1, 1) {0};
+    \node (n4) [vertex, mark_grey] at (3, 0.5) {5};
+    \node (n5) [vertex, mark_grey] at (0, 2) {5};
+    \node (n6) [vertex, mark_grey] at (1.5, 2.5) {5};
+    \path [biedge] (n1) edge node[label=above:{1}] {} (n2);
+    \path [biedge] (n2) edge node[label=above:{2}] {} (n4);
+    \path [biedge] (n4) edge node[label=above:{6}] {} (n6);
+    \path [biedge] (n6) edge node[label=above:{2}] {} (n5);
+    \path [biedge] (n5) edge node[label=above:{3}] {} (n1);
+    \path [biedge'] (n1) edge node[label=below:{2}] {} (n3);
+    \path [biedge'] (n3) edge node[label=below:{5}] {} (n2);
+    \path [biedge] (n3) edge node[label=right:{5}] {} (n6);
+    \node (host) [graph, fit={(n1) (n2) (n3) (n4) (n5) (n6)}, label=below:{10. After an Application of 'reduce'}] {};  
+  \end{scope}
   
 \end{tikzpicture}
 \caption{Simple Dijkstra Program Example}
