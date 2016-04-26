@@ -115,7 +115,7 @@ Figure \ref{fig:simple_rule_sans_k} shows the same rule without its interface gr
 
 \input{rule_example}
 
-Rules are applied using a left-hand side graph (LHS) and a right-hand side graph (RHS), where both the LHS and RHS are totally labelled graphs, and a partially labeled graph known as the interface. An application of a rule to a graph will remove the items found in the LHS and not the interface, and then add the items in the RHS not found in the interface, relabelling the nodes that are unlabelled in the interface \cite{gp_lang, gp2_design}. Figure \ref{fig:simple_rule_application} shows the application of the rule shown in figure \ref{fig:simple_rule_sans_k} on a host graph. Step 1 shows the matching of the LHS to the host graph. This match is chosen non-deterministically, and the other possibilities are shown as alternative matches. Step 2 shows the removal of the nodes and edges that are in the LHS and not in the Interface. Step 3 shows the addition of the nodes and edges that are in the RHS and not in the Interface. Step 3 would also be the step to add any labels to nodes, however, the nodes in the host graph and rules have empty labels. The colouring of the nodes is an illustration to draw your attention to the changes as is not a feature of the graph.
+An application of a rule to a graph will remove the items found in the LHS and not the interface, and then add the items in the RHS not found in the interface, relabelling the nodes that are unlabelled in the interface \cite{gp_lang, gp2_design}. Figure \ref{fig:simple_rule_application} shows the application of the rule shown in figure \ref{fig:simple_rule_sans_k} on a host graph. Step 1 shows the matching of the LHS to the host graph. This match is chosen non-deterministically, and the other possibilities are shown as alternative matches. Step 2 shows the removal of the nodes and edges that are in the LHS and not in the Interface. Step 3 shows the addition of the nodes and edges that are in the RHS and not in the Interface. Step 3 would also be the step to add any labels to nodes, however, the nodes in the host graph and rules have empty labels. The colouring of the nodes is an illustration to draw your attention to the changes as is not a feature of the graph.
 
 \input{rule_application}
 
@@ -158,7 +158,7 @@ ProcCall    & ::= & ProcId \\
 
 The program \ref{fig:simple_program} finds the shortest path to each node, using Dijkstra's algorithm for pathfinding. The procedure 'Traverse' isn't strictly necessary - it could be replaced with '\texttt{\{add, reduce\}}', but it serves to illustrate the syntax for procedures. 
 
-Running this program on the host graph shown will give the intermediary graphs shown in figure \ref{fig:simple_program_example_1}. Since GP is non-deteministic, the figure shows only one of the many possible outcomes of applying this graph program.
+Running this program on the host graph shown will give the intermediary graphs shown in figure \ref{fig:simple_program_example_1}. Since GP is non-deteministic, the figure shows only one of the many possible outcomes of applying this graph program. The host graph is making use of another addition of GP2. The undirected edges are syntactic sugar for two directional edges, one going in each direction.
 
 \input{simple_program_execution}
 
